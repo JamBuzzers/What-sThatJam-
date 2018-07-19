@@ -1,0 +1,9 @@
+<application>
+  <component name="ParameterNameHintsSettings">
+    <blacklists>
+      <blacklist language="Java">
+        <added pattern="com.bumptech.glide.load.resource.bitmap.RoundedCorners.RoundedCorners(roundingRadius)" />
+      </blacklist>
+    </blacklists>
+  </component>
+</application>
