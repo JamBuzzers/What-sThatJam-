@@ -19,14 +19,15 @@ Our idea is to create an app that allows users to....
         - Make friends
         - Add a playlist 
          - A list of player's matches 
-
+    - Browse View
+        - List of online players and Categories of music 
 ## Implementation Notes
 This section details our implementation and highlights known bugs.
 
 ### APIs
 We used the following APIs:
 
-#### Spotify {Fix }
+#### Spotify {Fix to whatever Spotify }
 We used Spotify for authentication, music streaming and getting metadata. We used both the Spotify Android SDK (https://developer.spotify.com/technologies/spotify-android-sdk/) and a wrapper for the Spotify Web API (https://github.com/kaaes/spotify-web-api-android).
 
 ### Sensors{Strech}
