@@ -1,11 +1,11 @@
-#What'sThatJam
+# What'sThatJam
 Compete with your friends to find out who knows that jam!
 Team JamBuzzers: Callum Pe, Latifat Ozoya, Lessley Hernandez
 
-##Project Idea
+## Project Idea
 Our idea is to create an app that allows users to....
 
-##User experience
+## User experience
 * Login page - uses Spotify login, after successful login opens main view
 * Main view - Bottom Nav. bar
     * Game view
@@ -21,20 +21,20 @@ Our idea is to create an app that allows users to....
     * Browse View
         * List of online players and Categories of music
 
-##Implementation Notes
+## Implementation Notes
 This section details our implementation and highlights known bugs.
 
-##APIs
+## APIs
 We used the following APIs:
 
-##Spotify {Fix to whatever Spotify }
+## Spotify {Fix to whatever Spotify }
 We used Spotify for authentication, music streaming and getting metadata. We used both the Spotify Android SDK (https://developer.spotify.com/technologies/spotify-android-sdk/) and a wrapper for the Spotify Web API (https://github.com/kaaes/spotify-web-api-android).
 
-##Sensors{Strech}
+## Sensors{Strech}
 We use an accelerometer for shake detection. Shaking the phone to taunt other players.
 
-##Server development
+## Server development
 We will used Firebase to manage a database...
 
-##UI Design
+## UI Design
 Here is our mockup on Figma.
