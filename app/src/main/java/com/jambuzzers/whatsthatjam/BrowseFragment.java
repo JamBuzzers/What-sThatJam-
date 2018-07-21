@@ -1,0 +1,25 @@
+package com.jambuzzers.whatsthatjam;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+public class BrowseFragment extends Fragment {
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_browse, container, false);
+    }
+
+}
+
+// should be after you log in
+// DatabaseReference usersRef = ref.child("users");
+//
+//        Map<String, User> users = new HashMap<>();
+//        users.put("latifat", new User("users"));
+//
+//        usersRef.setValueAsync(users);
