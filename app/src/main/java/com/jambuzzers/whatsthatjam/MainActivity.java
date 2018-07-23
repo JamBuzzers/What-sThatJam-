@@ -7,7 +7,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
 
+import com.github.nkzawa.emitter.Emitter;
+import com.github.nkzawa.socketio.client.Socket;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -19,6 +24,9 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class MainActivity extends Activity implements
         SpotifyPlayer.NotificationCallback, ConnectionStateCallback
 {
@@ -27,14 +35,55 @@ public class MainActivity extends Activity implements
     private Player mPlayer;
     private static final int REQUEST_CODE = 1337;
 
+
+    private Socket mSocket;
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
         AuthenticationRequest request = builder.build();
+
+        Button play = findViewById(R.id.btPlay);
+        Button resume = findViewById(R.id.btResume);
+        Button pause = findViewById(R.id.btPause);
+
+        App app = (App) getApplication();
+        mSocket = app.getmSocket();
+        mSocket.connect();
+        initiliazesocket();
+
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("name","game_1");
+            mSocket.emit("join",obj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        play.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSocket.emit("play");
+            }
+        });
+        resume.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSocket.emit("resume");
+            }
+        });
+        pause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSocket.emit("pause");
+            }
+        });
+
+
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
@@ -51,6 +100,7 @@ public class MainActivity extends Activity implements
                     @Override
                     public void onInitialized(SpotifyPlayer spotifyPlayer) {
                         mPlayer = spotifyPlayer;
+                        Toast.makeText(MainActivity.this,"ready",Toast.LENGTH_SHORT).show();
                         mPlayer.addConnectionStateCallback(MainActivity.this);
                         mPlayer.addNotificationCallback(MainActivity.this);
                     }
@@ -94,7 +144,6 @@ public class MainActivity extends Activity implements
     public void onLoggedIn() {
         Log.d("MainActivity", "User logged in");
 
-        mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
     }
 
     @Override
@@ -115,5 +164,26 @@ public class MainActivity extends Activity implements
     @Override
     public void onConnectionMessage(String message) {
         Log.d("MainActivity", "Received connection message: " + message);
+
+    }
+    public void initiliazesocket(){
+        mSocket.on("play", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                mPlayer.playUri(null, "spotify:track:2TpxZ7JUBn3uw46aR7qd6V", 0, 0);
+            }
+        });
+        mSocket.on("pause", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                mPlayer.pause(null);
+            }
+        });
+        mSocket.on("resume", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                mPlayer.resume(null);
+            }
+        });
     }
 }
