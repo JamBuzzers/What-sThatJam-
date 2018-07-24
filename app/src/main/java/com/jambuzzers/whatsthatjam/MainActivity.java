@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.SearchView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -25,15 +26,18 @@ import com.spotify.sdk.android.player.PlayerEvent;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
-public class MainActivity extends Activity implements SpotifyPlayer.NotificationCallback, ConnectionStateCallback
-{
+public class MainActivity extends Activity implements SpotifyPlayer.NotificationCallback, ConnectionStateCallback {
+
     private static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
     private Player mPlayer;
     private static final int REQUEST_CODE = 1337;
 
+    public BrowseAdapter browseAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -43,20 +47,34 @@ public class MainActivity extends Activity implements SpotifyPlayer.Notification
 
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-//        User.queryUserName(searchbar.getText().toString(), new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if (task.isSuccessful()) {
-//                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                        // list.add(document)
-//                        // adapter.notifyitem(1)
-//                        Log.d("tag", document.getId() + " => " + document.getData());
-//                    }
-//                } else {
-//                    Log.d("tag", "Error getting documents: ", task.getException());
-//                }
-//            }
-//        });
+        SearchView searchView = findViewById(R.id.search_bar);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String search) {
+                User.queryUserName(
+                        search,
+                        new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    Log.d("tag","it was successful");
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Log.d("tag", document.getId() + " => " + document.getData());
+                                    }
+                                } else {
+                                    Log.d("tag", "Error getting document: ", task.getException());
+                                }
+                            }
+                        });
+                return false;
+            }
+        });
 
     }
 

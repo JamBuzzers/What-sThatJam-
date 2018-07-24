@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class BrowseFragment extends Fragment {
+public class SearchableFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -15,11 +15,3 @@ public class BrowseFragment extends Fragment {
     }
 
 }
-
-// should be after you log in
-// DatabaseReference usersRef = ref.child("users");
-//
-//        Map<String, User> users = new HashMap<>();
-//        users.put("latifat", new User("users"));
-//
-//        usersRef.setValueAsync(users);
