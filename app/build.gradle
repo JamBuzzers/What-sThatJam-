@@ -35,5 +35,8 @@ dependencies {
     implementation 'com.spotify.sdk:spotify-player-24-noconnect-2.20b@aar'
     //Socketio
     implementation 'com.github.nkzawa:socket.io-client:0.3.0'
+    // Butterknife
+    implementation 'com.jakewharton:butterknife:8.4.0'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.4.0'
 }
 apply plugin: 'com.google.gms.google-services'
