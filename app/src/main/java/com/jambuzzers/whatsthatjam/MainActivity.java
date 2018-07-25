@@ -22,8 +22,8 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity {
 
 
-    final FragmentManager fragmentManager = getSupportFragmentManager();
-    final Fragment fragment1 = new LoginFragment();
+//    final FragmentManager fragmentManager = getSupportFragmentManager();
+//    final Fragment fragment1 = new LoginFragment();
     private Player mPlayer;
 
 
@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.placeholder, fragment1).commit();
+//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//        fragmentTransaction.replace(R.id.placeholder, fragment1).commit();
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
