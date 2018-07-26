@@ -5,9 +5,10 @@ package com.jambuzzers.whatsthatjam;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
@@ -29,41 +30,18 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        button = (Button) findViewById(R.id.btn);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                final Intent intent = new Intent(MainActivity.this,SearchableActivity.class);
-                startActivity(intent);
-            }
-        });
 
-//        SearchView searchView = findViewById(R.id.search_bar);
-//
-//        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        // define your fragments here
+        final Fragment searchableFragment = new SearchableFragment();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment, searchableFragment).commit();
+
+//        button = (Button) findViewById(R.id.btn);
+//        button.setOnClickListener(new View.OnClickListener() {
 //            @Override
-//            public boolean onQueryTextSubmit(String s) {
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onQueryTextChange(String search) {
-//                User.queryUserName(
-//                        search,
-//                        new OnCompleteListener<QuerySnapshot>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                                if (task.isSuccessful()) {
-//                                    Log.d("tag","it was successful");
-//                                    for (QueryDocumentSnapshot document : task.getResult()) {
-//                                        Log.d("tag", document.getId() + " => " + document.getData());
-//                                    }
-//                                } else {
-//                                    Log.d("tag", "Error getting document: ", task.getException());
-//                                }
-//                            }
-//                        });
-//                return false;
+//            public void onClick(View view) {
+//                final Intent intent = new Intent(MainActivity.this,SearchableActivity.class);
+//                startActivity(intent);
 //            }
 //        });
 
