@@ -33,5 +33,11 @@ public class User {
                 .addOnCompleteListener(onCompleteListener);
     }
 
+    public static void queryAllUsernames(OnCompleteListener<QuerySnapshot> onCompleteListener){
+        database.collection("users")
+                .get()
+                .addOnCompleteListener(onCompleteListener);
+    }
+
 }
 
