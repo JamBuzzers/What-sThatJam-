@@ -51,7 +51,7 @@ public class GameFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if(i == EditorInfo.IME_ACTION_DONE){}
-                    //TODO send to response to server
+                //TODO send to response to server
 
                 return handled;
             }
