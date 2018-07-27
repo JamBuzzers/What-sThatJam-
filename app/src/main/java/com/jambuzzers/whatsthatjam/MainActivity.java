@@ -6,41 +6,38 @@ package com.jambuzzers.whatsthatjam;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import android.widget.Button;
+
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.Spotify;
 
+
 public class MainActivity extends AppCompatActivity{
 
+    final FragmentManager fragmentManager = getSupportFragmentManager();
+    final Fragment loginFrag = new LoginFragment();
     private Player mPlayer;
-    private Button button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        // define your fragments here
-        final Fragment searchableFragment = new SearchableFragment();
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, searchableFragment).commit();
+        ft.replace(R.id.fragment, loginFrag).commit();
 
-//        button = (Button) findViewById(R.id.btn);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                final Intent intent = new Intent(MainActivity.this,SearchableActivity.class);
-//                startActivity(intent);
-//            }
-//        });
-
+        ViewPager pager = findViewById(R.id.view_pager);
+        pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
     }
 
     @Override
@@ -56,4 +53,39 @@ public class MainActivity extends AppCompatActivity{
         Spotify.destroyPlayer(this);
         super.onDestroy();
     }
+
+    private class MyPagerAdapter extends FragmentPagerAdapter {
+
+        private MyPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int pos) {
+            switch(pos) {
+
+                //TODO: When the activity gets recreated (e.g. on orientation change) so do the ViewPager's fragments.
+                //TODO: Recycler view check... and scrolling
+               // case 0: return LoginFragment.newInstance("loginFragment, Instance 1");
+                case 0: return SearchableFragment.newInstance("browseFragment, instance1");
+                case 1: return GameFragment.newInstance("gameFragment, Instance 1");
+                case 2: return ProfileFragment.newInstance("profileFragment, Instance 1");
+                default: return GameFragment.newInstance("gameFragment, Instance 2");
+            }
+        }
+
+        @Override
+        public int getCount() {
+            return 3;
+        }
+// function for adding title to the page view
+//        @Override
+//        public CharSequence(int position){
+//            switch (position){
+//                case 0:
+//
+//            }
+//        }
+    }
+
 }

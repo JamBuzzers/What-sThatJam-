@@ -18,21 +18,15 @@ public class LoginFragment extends Fragment {
     public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
     public static final int REQUEST_CODE = 1337;
-
     private OnFragmentInteractionListener mListener;
 
     public LoginFragment() {
         // Required empty public constructor
     }
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
-
     }
 
     @Override
@@ -45,7 +39,6 @@ public class LoginFragment extends Fragment {
 
         return inflater.inflate(R.layout.fragment_login, container, false);
     }
-
 
     @Override
     public void onAttach(Context context) {
