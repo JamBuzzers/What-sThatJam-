@@ -1,11 +1,12 @@
+// SimpleApp
+// Created by Spotify on 02/08/17.
+// Copyright (c) 2017 Spotify. All rights reserved.
 package com.jambuzzers.whatsthatjam;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -20,36 +21,23 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
 
-import butterknife.ButterKnife;
+public class MainActivity extends AppCompatActivity{
 
-public class MainActivity extends FragmentActivity {
-
-
-    final FragmentManager fragmentManager = getSupportFragmentManager();
-    final Fragment loginFrag = new LoginFragment();
+//    final FragmentManager fragmentManager = getSupportFragmentManager();
+//    final Fragment loginFrag = new LoginFragment();
     private Player mPlayer;
-
-
+    //private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
 
-        ViewPager pager = (ViewPager) findViewById(R.id.view_pager);
+        ViewPager pager = findViewById(R.id.view_pager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-
-        //can't call a fragment manager and a view pager at the same time..... yay!
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.placeholder, loginFrag).commit();
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
@@ -104,7 +92,7 @@ public class MainActivity extends FragmentActivity {
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
 
-        public MyPagerAdapter(FragmentManager fm) {
+        private MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

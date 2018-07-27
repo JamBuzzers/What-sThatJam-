@@ -25,7 +25,6 @@ public class GameFragment extends Fragment {
 
     @BindView(R.id.guess_btn) Button stopBtn;
     @BindView(R.id.etGuess) EditText etSongGuess;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -51,7 +50,7 @@ public class GameFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if(i == EditorInfo.IME_ACTION_DONE){}
-                    //TODO send to response to server
+                //TODO send to response to server
 
                 return handled;
             }
@@ -65,11 +64,9 @@ public class GameFragment extends Fragment {
     }
 
     public static GameFragment newInstance(String text) {
-
         GameFragment frag = new GameFragment();
         Bundle b = new Bundle();
         b.putString("msg", text);
-
         frag.setArguments(b);
 
         return frag;
