@@ -64,5 +64,14 @@ public class GameFragment extends Fragment {
         etSongGuess.setEnabled(true);
     }
 
+    public static GameFragment newInstance(String text) {
 
+        GameFragment frag = new GameFragment();
+        Bundle b = new Bundle();
+        b.putString("msg", text);
+
+        frag.setArguments(b);
+
+        return frag;
+    }
 }
