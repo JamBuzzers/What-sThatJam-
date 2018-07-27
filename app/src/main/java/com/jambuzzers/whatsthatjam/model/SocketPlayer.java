@@ -14,6 +14,7 @@ import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 public abstract class SocketPlayer {
 
@@ -21,15 +22,18 @@ public abstract class SocketPlayer {
     private SpotifyPlayer spotifyplayer;
     private Socket mSocket;
     private SocketPlayerListener listener;
+    private String token;
 
     public interface SocketPlayerListener {
          void onResume();
          void onPlay();
          void onPause();
+         void onInvite(String gameId);
     }
     public SocketPlayer(Player player, AuthenticationResponse response, Context context, SocketPlayerListener l){
         if (response.getType() == AuthenticationResponse.Type.TOKEN) {
             Log.d("TOKEN",response.getAccessToken());
+            token = response.getAccessToken();
             Config playerConfig = new Config(context, response.getAccessToken(), LoginFragment.CLIENT_ID);
             Spotify.getPlayer(playerConfig, context, new SpotifyPlayer.InitializationObserver() {
                 @Override
@@ -49,13 +53,22 @@ public abstract class SocketPlayer {
             throw new RuntimeException(e);
         }
         mSocket.connect();
-        mSocket.emit("token",response.getAccessToken());
     }
+
     public void pause(){
         mSocket.emit("pause");
     }
     public void answer(String answer){
-        mSocket.emit("answer",answer);
+        mSocket.emit("submit",answer);
+    }
+    public void startGame(ArrayList<String> invitees){
+        mSocket.emit("create",invitees);
+    }
+    public void acceptGame(String gameId){
+        mSocket.emit("accept", gameId);
+    }
+    private void login(){
+        mSocket.emit("login",token);
     }
     private void startSocketListening(){
         mSocket.on("play", new Emitter.Listener() {
@@ -71,6 +84,13 @@ public abstract class SocketPlayer {
             public void call(Object... args) {
                 spotifyplayer.pause(null);
                 listener.onPause();
+            }
+        });
+        mSocket.on("invite", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                String gameId = (String) args[0];
+                listener.onInvite(gameId);
             }
         });
         mSocket.on("resume", new Emitter.Listener() {
