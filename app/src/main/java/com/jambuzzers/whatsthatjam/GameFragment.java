@@ -25,7 +25,6 @@ public class GameFragment extends Fragment {
 
     @BindView(R.id.guess_btn) Button stopBtn;
     @BindView(R.id.etGuess) EditText etSongGuess;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,13 +55,18 @@ public class GameFragment extends Fragment {
                 return handled;
             }
         });
-
     }
-
     public void initGuessAccess() {
         stopBtn.setEnabled(false);
         etSongGuess.setEnabled(true);
     }
 
+    public static GameFragment newInstance(String text) {
+        GameFragment frag = new GameFragment();
+        Bundle b = new Bundle();
+        b.putString("msg", text);
+        frag.setArguments(b);
 
+        return frag;
+    }
 }

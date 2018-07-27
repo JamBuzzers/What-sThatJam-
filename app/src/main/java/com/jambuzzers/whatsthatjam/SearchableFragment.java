@@ -33,9 +33,6 @@ public class SearchableFragment extends Fragment {
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Get back arguments
-//        int SomeInt = getArguments().getInt("someInt", 0);
-//        String someTitle = getArguments().getString("someTitle", "");
     }
 
     @Override
@@ -109,14 +106,13 @@ public class SearchableFragment extends Fragment {
 //    }
 
 
-//       public static SearchableFragment newInstance() {
-//        SearchableFragment fragment = new SearchableFragment();
-//        Bundle args = new Bundle();
-//
-//        args.putString("someTitle", someTitle);
-//
-//        fragment.setArguments(args);
-//        return fragment;
-//    }
+    public static SearchableFragment newInstance(String text) {
+        SearchableFragment frag = new SearchableFragment();
+        Bundle b = new Bundle();
+        b.putString("msg", text);
+        frag.setArguments(b);
+
+        return frag;
+    }
 }
 
