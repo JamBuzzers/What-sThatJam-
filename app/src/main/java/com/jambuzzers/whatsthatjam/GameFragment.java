@@ -68,7 +68,6 @@ public class GameFragment extends Fragment {
                 }
                 //TODO send to response to server
 
-
                 return handled;
             }
         });
