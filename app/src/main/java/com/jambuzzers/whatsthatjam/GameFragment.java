@@ -47,7 +47,7 @@ public class GameFragment extends Fragment {
             }
 
             public void onFinish() {
-                tvTimer.setText("done!");
+                tvTimer.setText("Time is up!");
                 timesUp();
             }
         }.start();
@@ -80,7 +80,7 @@ public class GameFragment extends Fragment {
     public void timesUp(){
         stopBtn.setEnabled(false);
         etSongGuess.setEnabled(false);
-        Toast.makeText(getActivity(), "Time is up.", Toast.LENGTH_SHORT).show();
+        //Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
     }
 
     public static GameFragment newInstance(String text) {
