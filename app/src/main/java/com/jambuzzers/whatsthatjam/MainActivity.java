@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,15 +25,18 @@ import com.spotify.sdk.android.player.SpotifyPlayer;
 
 public class MainActivity extends AppCompatActivity{
 
-//    final FragmentManager fragmentManager = getSupportFragmentManager();
-//    final Fragment loginFrag = new LoginFragment();
+    final FragmentManager fragmentManager = getSupportFragmentManager();
+    final Fragment loginFrag = new LoginFragment();
     private Player mPlayer;
-    //private Button button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment, loginFrag).commit();
 
         ViewPager pager = findViewById(R.id.view_pager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
@@ -102,19 +106,19 @@ public class MainActivity extends AppCompatActivity{
 
                 //TODO: When the activity gets recreated (e.g. on orientation change) so do the ViewPager's fragments.
                 //TODO: Recycler view check... and scrolling
-
                // case 0: return LoginFragment.newInstance("loginFragment, Instance 1");
-                case 0: return GameFragment.newInstance("gameFragment, Instance 1");
-                //case 2: return BrowseFragment.newInstance("browseFragment, instance1");
-                default: return GameFragment.newInstance("ThirdFragment, Default");
+                case 0: return SearchableFragment.newInstance("browseFragment, instance1");
+                case 1: return GameFragment.newInstance("gameFragment, Instance 1");
+                case 2: return ProfileFragment.newInstance("profileFragment, Instance 1");
+                default: return GameFragment.newInstance("gameFragment, Instance 2");
             }
         }
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
-
+// function for adding title to the page view
 //        @Override
 //        public CharSequence(int position){
 //            switch (position){

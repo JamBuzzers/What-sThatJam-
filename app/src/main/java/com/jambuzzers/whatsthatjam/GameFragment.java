@@ -55,9 +55,7 @@ public class GameFragment extends Fragment {
                 return handled;
             }
         });
-
     }
-
     public void initGuessAccess() {
         stopBtn.setEnabled(false);
         etSongGuess.setEnabled(true);
