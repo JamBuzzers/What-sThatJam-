@@ -23,7 +23,6 @@
             tools:layout_editor_absoluteX="38dp"
             tools:layout_editor_absoluteY="356dp" />
 
-
         <EditText
             android:id="@+id/etGuess"
             android:layout_width="271dp"
@@ -33,6 +32,17 @@
             android:layout_marginTop="131dp"
             android:inputType="text"
             android:enabled="false" />
+
+        <TextView
+            android:id="@+id/tv_timer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="20dp"
+            android:layout_marginTop="13dp"
+            android:text="15s"
+            android:textColor="@color/colorAccent" />
 
     </RelativeLayout>
 </FrameLayout>
