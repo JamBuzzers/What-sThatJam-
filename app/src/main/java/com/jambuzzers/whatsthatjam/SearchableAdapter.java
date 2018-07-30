@@ -15,17 +15,15 @@ import java.util.ArrayList;
 
 public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.ViewHolder> {
 
-    ArrayList<User> users;
+    private ArrayList<User> users;
 
-    public  SearchableAdapter(ArrayList<User> u){ users=u; }
+    SearchableAdapter(ArrayList<User> user){ users=user; }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        // Inflate the custom layout
         View searchView = inflater.inflate(R.layout.item_search, viewGroup, false);
-
         // Return a new holder instance
         SearchableAdapter.ViewHolder viewHolder = new ViewHolder(searchView);
         return viewHolder;
@@ -33,7 +31,7 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.search_bar.setText(users.get(position).username);
+        holder.search_text.setText(users.get(position).username);
     }
 
     @Override
@@ -42,11 +40,11 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView search_bar;
+        public TextView search_text;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
-            search_bar = (TextView) itemView.findViewById(R.id.search_bar);
+            search_text = (TextView) itemView.findViewById(R.id.search_text);
         }
 
     }
