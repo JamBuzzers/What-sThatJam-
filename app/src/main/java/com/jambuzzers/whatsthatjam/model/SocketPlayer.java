@@ -9,14 +9,14 @@ import com.github.nkzawa.socketio.client.Socket;
 import com.jambuzzers.whatsthatjam.LoginFragment;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Config;
-import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
+import org.json.JSONArray;
 
-public abstract class SocketPlayer {
+import java.net.URISyntaxException;
+
+public class SocketPlayer {
 
     private static String SERVER_URL = "https://murmuring-dusk-18271.herokuapp.com/";
     private SpotifyPlayer spotifyplayer;
@@ -28,9 +28,9 @@ public abstract class SocketPlayer {
          void onResume();
          void onPlay();
          void onPause();
-         void onInvite(String gameId);
+         void onInvite(int gameId);
     }
-    public SocketPlayer(Player player, AuthenticationResponse response, Context context, SocketPlayerListener l){
+    public SocketPlayer( AuthenticationResponse response, Context context, SocketPlayerListener l){
         if (response.getType() == AuthenticationResponse.Type.TOKEN) {
             Log.d("TOKEN",response.getAccessToken());
             token = response.getAccessToken();
@@ -53,6 +53,8 @@ public abstract class SocketPlayer {
             throw new RuntimeException(e);
         }
         mSocket.connect();
+        startSocketListening();
+        login();
     }
 
     public void pause(){
@@ -61,12 +63,13 @@ public abstract class SocketPlayer {
     public void answer(String answer){
         mSocket.emit("submit",answer);
     }
-    public void startGame(ArrayList<String> invitees){
+    public void initiateGame(JSONArray invitees){
         mSocket.emit("create",invitees);
     }
-    public void acceptGame(String gameId){
+    public void acceptGame(int gameId){
         mSocket.emit("accept", gameId);
     }
+
     private void login(){
         mSocket.emit("login",token);
     }
@@ -89,7 +92,8 @@ public abstract class SocketPlayer {
         mSocket.on("invite", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                String gameId = (String) args[0];
+                Log.d("INVITATION","here");
+                int gameId = (int) args[0];
                 listener.onInvite(gameId);
             }
         });
@@ -111,6 +115,13 @@ public abstract class SocketPlayer {
             @Override
             public void call(Object... args) {
                 spotifyplayer.skipToNext(null);
+            }
+        });
+        mSocket.on("message", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                String string  = (String) args[0];
+                Log.d("LOGGING_SERVER", string);
             }
         });
     }
