@@ -3,13 +3,14 @@
 // Copyright (c) 2017 Spotify. All rights reserved.
 package com.jambuzzers.whatsthatjam;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Button;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -20,31 +21,45 @@ import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private Player mPlayer;
-    private Button button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         // define your fragments here
         final Fragment searchableFragment = new SearchableFragment();
+        //final Fragment gameViewFragment = new GameViewFragment();
+
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment, searchableFragment).commit();
 
-//        button = (Button) findViewById(R.id.btn);
-//        button.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                final Intent intent = new Intent(MainActivity.this,SearchableActivity.class);
-//                startActivity(intent);
-//            }
-//        });
 
+        //ALERT DIALOG
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
+        // Add the buttons
+        builder.setMessage("You've been invited to play a game");
+        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                //Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                //Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+//        dialog.getWindow().setGravity(Gravity.TOP);
+        dialog.show();
     }
 
     @Override
@@ -98,4 +113,5 @@ public class MainActivity extends AppCompatActivity{
         Spotify.destroyPlayer(this);
         super.onDestroy();
     }
+
 }
