@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -23,45 +24,26 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Spotify;
 
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity{
 
-    final FragmentManager fragmentManager = getSupportFragmentManager();
+public class MainActivity extends AppCompatActivity {
+
     final Fragment loginFrag = new LoginFragment();
 
+    BottomNavigationView navigation;
 
-    final Fragment gFrag = new GameFragment();
-    final Fragment pFrag = new ProfileFragment();
-    final Fragment sFrag = new SearchableFragment();
+    //This is our viewPager
+    private ViewPager viewPager;
 
-
-
+    //defined fragments
+    SearchableFragment searchFragment;
     GameFragment gameFragment;
+    ProfileFragment profileFragment;
+    MenuItem prevMenuItem;
+
     SocketPlayer player;
-
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener=
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    switch (item.getItemId()) {
-                        case R.id.search:
-                            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                            fragmentTransaction.replace(R.id.fragment , sFrag).commit();
-                            return true;
-                        case R.id.play:
-                            FragmentTransaction fragmentTransaction2 = fragmentManager.beginTransaction();
-                            fragmentTransaction2.replace(R.id.fragment, gFrag).commit();
-                            return true;
-                        case R.id.profile:
-                            FragmentTransaction fragmentTransaction3 = fragmentManager.beginTransaction();
-                            fragmentTransaction3.replace(R.id.fragment, pFrag).commit();
-                            return true;
-                    }
-                    return false;
-                }
-            };
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,18 +51,62 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment, loginFrag).commit();
 
+        //Initializing viewPager
+        viewPager = findViewById(R.id.view_pager);
 
-        ViewPager pager = findViewById(R.id.view_pager);
-        pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+        //Initializing the bottomNavigationView
+        navigation = findViewById(R.id.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.search:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.play:
+                                viewPager.setCurrentItem(1);
+                                break;
+                            case R.id.profile:
+                                viewPager.setCurrentItem(2);
+                                break;
+
+                                default:
+
+                        }
+                        return false;
+                    }
+                });
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (prevMenuItem != null) {
+                    prevMenuItem.setChecked(false);
+                }
+                else {
+                    navigation.getMenu().getItem(0).setChecked(false);
+                }
+                Log.d("page", "onPageSelected: "+position);
+                navigation.getMenu().getItem(position).setChecked(true);
+                prevMenuItem = navigation.getMenu().getItem(position);
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        setupViewPager(viewPager);
     }
 
     @Override
@@ -94,43 +120,47 @@ public class MainActivity extends AppCompatActivity{
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(MainActivity.this, "Resumed",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
+
                 @Override
                 public void onPlay() {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(MainActivity.this, "Played",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
+
                 @Override
                 public void onPause() {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(MainActivity.this, "Pause",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
+
                 @Override
                 public void onInvite(int gameId) {
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(MainActivity.this, "Invited ",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
                         }
                     });
                     player.acceptGame(gameId);
                 }
-            }) ;
+            });
             gameFragment.setListener(player);
         }
 
     }
+
     @Override
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
@@ -139,34 +169,34 @@ public class MainActivity extends AppCompatActivity{
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
 
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+
         private MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
-        public Fragment getItem(int pos) {
-            switch(pos) {
-
-                //TODO: When the activity gets recreated (e.g. on orientation change) so do the ViewPager's fragments.
-                //TODO: Recycler view check... and scrolling
-               // case 0: return LoginFragment.newInstance("loginFragment, Instance 1");
-                case 0: return SearchableFragment.newInstance("browseFragment, instance1");
-                case 1:
-                    if (gameFragment == null) {
-                        gameFragment = GameFragment.newInstance("gameFragment, Instance 1");
-                    }
-                    return gameFragment;
-                case 2: return ProfileFragment.newInstance("profileFragment, Instance 1");
-                default: return GameFragment.newInstance("gameFragment, Instance 2");
-            }
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
         }
         @Override
         public int getCount() {
-            return 3;
+            return mFragmentList.size();
         }
 
+        private void addFragment(Fragment fragment) {
+            mFragmentList.add(fragment);
+        }
     }
-
-
-
+    private void setupViewPager(ViewPager viewPager) {
+        MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
+        if(gameFragment == null) gameFragment = new GameFragment();
+        if(searchFragment == null) searchFragment = new SearchableFragment();
+        if(profileFragment == null) profileFragment = new ProfileFragment();
+        adapter.addFragment(searchFragment);
+        adapter.addFragment(gameFragment);
+        adapter.addFragment(profileFragment);
+        viewPager.setAdapter(adapter);
+    }
 }
+
