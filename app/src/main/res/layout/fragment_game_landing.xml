@@ -16,8 +16,8 @@
         android:background="@drawable/gamev"
         android:scaleType="centerCrop" />
 
-    <Button
-        android:id="@+id/random"
+    <Buttons
+        android:id="@+id/btRandom"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -27,12 +27,13 @@
         android:text="random play" />
 
     <Button
-        android:id="@+id/create"
+        android:id="@+id/btCreate"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="197dp"
-        android:text="create a game" />
+        android:text="create a game"
+        />
 
 </RelativeLayout>
