@@ -20,14 +20,15 @@ import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class SearchableFragment extends Fragment {
 
-    RecyclerView rv;
+    @BindView(R.id.rv) RecyclerView rv;
 
-    public SearchableFragment() {
-    }
 
-    SearchView searchView;
+    @BindView(R.id.search_bar) SearchView searchView;
     SearchableAdapter searchableAdapter;
     ArrayList<User> users;
 
@@ -38,30 +39,15 @@ public class SearchableFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_searchable, container, false);  //Inflate Layout
-        rv = (RecyclerView) view.findViewById(R.id.rv);
-
+        ButterKnife.bind(view);
         users = new ArrayList<>();
         searchableAdapter = new SearchableAdapter(users);
         rv.setAdapter(searchableAdapter);
-
         rv.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
-
-        // Get the intent, verify the action and get the query
-        //Intent intent = getIntent();
-//       String query = null;
-//        if (Intent.ACTION_SEARCH.equals(getActivity())) {
-//            query = getActivity().getIntent().getStringExtra(SearchManager.QUERY);
-//            SearchRecentSuggestions suggestions = new SearchRecentSuggestions(getContext(),
-//                    SampleRecentSuggestionsProvider.AUTHORITY, SampleRecentSuggestionsProvider.MODE);
-//            suggestions.saveRecentQuery(query, null);
-//        }
-
-        searchView = (SearchView) view.findViewById(R.id.search_bar);
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange(final String search) {
@@ -72,10 +58,9 @@ public class SearchableFragment extends Fragment {
                             Log.d("tag", "it was successful");
                             users.clear();
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                if((String)document.getData().get("username") != null) {
+                                if(document.getData().get("username") != null) {
                                     if (((String) document.getData().get("username")).contains(search)) {
                                         users.add(new User((String) document.getData().get("username")));
-                                        //Log.d("tag", document.getId() + " => " + document.getData());
                                     }
                                 }
                             }
@@ -98,21 +83,5 @@ public class SearchableFragment extends Fragment {
         });
     }
 
-//    public boolean onSearchRequested() {
-//        Bundle appData = new Bundle();
-//        appData.putBoolean(String.valueOf(SearchableFragment.this), true);
-//        getActivity().startSearch(null, false, appData, false);
-//        return true;
-//    }
-
-
-    public static SearchableFragment newInstance(String text) {
-        SearchableFragment frag = new SearchableFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-        frag.setArguments(b);
-
-        return frag;
-    }
 }
 
