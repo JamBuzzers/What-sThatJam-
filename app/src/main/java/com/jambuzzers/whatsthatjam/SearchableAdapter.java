@@ -12,6 +12,9 @@ import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.ArrayList;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.ViewHolder> {
 
@@ -23,17 +26,15 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        // Inflate the custom layout
         View searchView = inflater.inflate(R.layout.item_search, viewGroup, false);
 
-        // Return a new holder instance
         SearchableAdapter.ViewHolder viewHolder = new ViewHolder(searchView);
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.search_bar.setText(users.get(position).username);
+        holder.name.setText(users.get(position).username);
     }
 
     @Override
@@ -42,11 +43,10 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView search_bar;
-
+        @BindView(R.id.tvName) TextView name;
         public ViewHolder(View itemView) {
             super(itemView);
-            search_bar = (TextView) itemView.findViewById(R.id.search_bar);
+            ButterKnife.bind(this, itemView);
         }
 
     }

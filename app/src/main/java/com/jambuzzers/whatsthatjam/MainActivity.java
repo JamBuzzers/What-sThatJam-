@@ -12,9 +12,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
-import android.widget.Button;
-
-
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Player;
@@ -38,7 +35,11 @@ public class MainActivity extends AppCompatActivity{
 
         ViewPager pager = findViewById(R.id.view_pager);
         pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+
+
+
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -67,7 +68,7 @@ public class MainActivity extends AppCompatActivity{
                 //TODO: When the activity gets recreated (e.g. on orientation change) so do the ViewPager's fragments.
                 //TODO: Recycler view check... and scrolling
                // case 0: return LoginFragment.newInstance("loginFragment, Instance 1");
-                case 0: return SearchableFragment.newInstance("browseFragment, instance1");
+                case 0: return new SearchableFragment();
                 case 1: return GameFragment.newInstance("gameFragment, Instance 1");
                 case 2: return ProfileFragment.newInstance("profileFragment, Instance 1");
                 default: return GameFragment.newInstance("gameFragment, Instance 2");
