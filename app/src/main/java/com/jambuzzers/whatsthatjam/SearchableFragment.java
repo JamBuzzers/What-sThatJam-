@@ -55,9 +55,10 @@ public class SearchableFragment extends Fragment {
                             Log.d("tag", "it was successful");
                             users.clear();
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                if (((String) document.getData().get("name")).contains(search)) {
+                                if(document.getData().get("name")!= null && ((String) document.getData().get("name")).contains(search))
                                     users.add(new User(document));
-                                }
+                                else if(document.getId().contains(search))
+                                    users.add(new User(document));
                             }
                             searchableAdapter.notifyDataSetChanged();
                         } else {

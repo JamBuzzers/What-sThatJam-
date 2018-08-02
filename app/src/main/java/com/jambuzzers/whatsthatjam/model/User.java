@@ -10,7 +10,10 @@ public class User {
     public String id;
 
     public User(DocumentSnapshot document){
-        username = (String)document.getData().get("name");
+        if(document.getData().get("name")!=null)
+            username = (String)document.getData().get("name");
+        else
+            username = document.getId();
         id = (String)document.getData().get("id");
     }
 }
