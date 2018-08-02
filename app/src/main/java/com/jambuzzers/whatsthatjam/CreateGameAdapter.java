@@ -15,26 +15,35 @@ import java.util.ArrayList;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-
-public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.ViewHolder> {
+public class CreateGameAdapter extends RecyclerView.Adapter<CreateGameAdapter.ViewHolder> {
 
     ArrayList<User> users;
+    ArrayList<User> invitees;
 
-    public  SearchableAdapter(ArrayList<User> u){ users=u; }
+    public CreateGameAdapter(ArrayList<User> u, ArrayList<User> inv) {
+        invitees = inv;
+        users = u;
+    }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+    public CreateGameAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         Context context = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View searchView = inflater.inflate(R.layout.item_search, viewGroup, false);
 
-        SearchableAdapter.ViewHolder viewHolder = new ViewHolder(searchView);
+        CreateGameAdapter.ViewHolder viewHolder = new CreateGameAdapter.ViewHolder(searchView);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull CreateGameAdapter.ViewHolder holder, final int position) {
         holder.name.setText(users.get(position).username);
+        holder.name.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                invitees.add(users.get(position));
+            }
+        });
     }
 
     @Override
@@ -43,12 +52,13 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tvName) TextView name;
+        @BindView(R.id.tvName)
+        TextView name;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
 
     }
-
 }

@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -43,7 +42,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -70,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                                 viewPager.setCurrentItem(2);
                                 break;
 
-                                default:
+                            default:
 
                         }
                         return false;
@@ -104,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         });
         setupViewPager(viewPager);
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
