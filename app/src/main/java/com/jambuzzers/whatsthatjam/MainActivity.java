@@ -27,21 +27,17 @@ import com.spotify.sdk.android.player.Spotify;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class MainActivity extends AppCompatActivity {
 
-    final Fragment loginFrag = new LoginFragment();
-
-    BottomNavigationView navigation;
-
-    //This is our viewPager
+    private BottomNavigationView navigation;
     private ViewPager viewPager;
 
-    //defined fragments
+    //define fragments
     SearchableFragment searchFragment;
     GameFragment gameFragment;
     ProfileFragment profileFragment;
     MenuItem prevMenuItem;
+    final Fragment loginFrag = new LoginFragment();
 
     SocketPlayer player;
 
