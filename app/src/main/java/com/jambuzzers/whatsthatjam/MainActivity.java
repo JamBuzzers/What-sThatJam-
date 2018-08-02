@@ -5,73 +5,156 @@ package com.jambuzzers.whatsthatjam;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+
+import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
-import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.Spotify;
 
-import butterknife.ButterKnife;
+import java.util.ArrayList;
+import java.util.List;
 
+public class MainActivity extends AppCompatActivity {
 
-public class MainActivity extends AppCompatActivity implements ProfileFragment.ProfileInterface {
+    private BottomNavigationView navigation;
+    private ViewPager viewPager;
 
+    //define fragments
+    SearchableFragment searchFragment;
+    GameFragment gameFragment;
+    ProfileFragment profileFragment;
+    MenuItem prevMenuItem;
+    final Fragment loginFrag = new LoginFragment();
 
-
-//    int PICK_IMAGE_REQUEST = 111;
-//    Uri filePath;
-//
-//    @BindView(R.id.profile)
-//    ImageView Profile;
-//
-//    @BindView(R.id.upload_btn)
-//    Button Upload_btn;
-//
-//
-//    //Firebase
-//    FirebaseStorage storage;
-//    StorageReference storageReference;
-
+    SocketPlayer player;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        FragmentTransaction fragmentTransaction;
-        final FragmentManager fragmentManager = getSupportFragmentManager();
-        //final Fragment loginFrag = new LoginFragment();
-        ProfileFragment pf = ProfileFragment.newInstance("latifaozoya");
-        Player mPlayer;
 
-        ButterKnife.bind(this);
-       // FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-      //  ft.replace(R.id.fragment, loginFrag).commit();
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.fragment, loginFrag).commit();
 
-        fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment, pf).commit();
+        //Initializing viewPager
+        viewPager = findViewById(R.id.view_pager);
 
-        //ViewPager pager = findViewById(R.id.view_pager);
-        //pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+        //Initializing the bottomNavigationView
+        navigation = findViewById(R.id.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.search:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.play:
+                                viewPager.setCurrentItem(1);
+                                break;
+                            case R.id.profile:
+                                viewPager.setCurrentItem(2);
+                                break;
 
-//        Upload_btn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                onChangeImage();
-//            }
-//        });
-//
-//        storage = FirebaseStorage.getInstance();
-//        storageReference = storage.getReference();
+                            default:
 
+                        }
+                        return false;
+                    }
+                });
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (prevMenuItem != null) {
+                    prevMenuItem.setChecked(false);
+                }
+                else {
+                    navigation.getMenu().getItem(0).setChecked(false);
+                }
+                Log.d("page", "onPageSelected: "+position);
+                navigation.getMenu().getItem(position).setChecked(true);
+                prevMenuItem = navigation.getMenu().getItem(position);
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        setupViewPager(viewPager);
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        if (requestCode == LoginFragment.REQUEST_CODE) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            player = new SocketPlayer(response, this, new SocketPlayer.SocketPlayerListener() {
+                @Override
+                public void onResume() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onPlay() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onPause() {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onInvite(int gameId) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    player.acceptGame(gameId);
+                }
+            });
+            gameFragment.setListener(player);
+        }
+
+    }
 
     @Override
     protected void onDestroy() {
@@ -79,92 +162,35 @@ public class MainActivity extends AppCompatActivity implements ProfileFragment.P
         super.onDestroy();
     }
 
-
     private class MyPagerAdapter extends FragmentPagerAdapter {
+
+        private final List<Fragment> mFragmentList = new ArrayList<>();
 
         private MyPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
-        public Fragment getItem(int pos) {
-            switch(pos) {
-
-                //TODO: When the activity gets recreated (e.g. on orientation change) so do the ViewPager's fragments.
-                //TODO: Recycler view check... and scrolling
-               // case 0: return LoginFragment.newInstance("loginFragment, Instance 1");
-                //case 0: return SearchableFragment.newInstance("browseFragment, instance1");
-                //case 1: return GameFragment.newInstance("gameFragment, Instance 1");
-                //case 2: return ProfileFragment.newInstance("profileFragment, Instance 1");
-                default: return GameFragment.newInstance("gameFragment, Instance 2");
-            }
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
         }
-
         @Override
         public int getCount() {
-            return 3;
+            return mFragmentList.size();
+        }
+
+        private void addFragment(Fragment fragment) {
+            mFragmentList.add(fragment);
         }
     }
-
-//    public void onChangeImage() {
-//        Intent intent = new Intent();
-//        intent.setType("image/*");
-//        intent.setAction(Intent.ACTION_PICK);
-//        startActivityForResult(Intent.createChooser(intent, "Select Image"), PICK_IMAGE_REQUEST);
-//    }
-//
-//    public void uploadImage() {
-//        if(filePath != null)
-//        {
-//
-//            final ProgressDialog progressDialog = new ProgressDialog(this);
-//            progressDialog.setTitle("Uploading...");
-//            progressDialog.show();
-//            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
-//
-//            ref.putFile(filePath) .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    progressDialog.dismiss();
-//                    Toast.makeText(MainActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
-//                }
-//            })
-//            .addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    progressDialog.dismiss();
-//                    Toast.makeText(MainActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            })
-//            .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-//                    double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-//                            .getTotalByteCount());
-//                    progressDialog.setMessage("Uploaded "+(int)progress+"%");
-//                }
-//            });
-//        }
-//    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == LoginFragment.REQUEST_CODE) {
-            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-        }
-//        else if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && intent != null && intent.getData() != null) {
-//            filePath = intent.getData();
-//            try {
-//                //getting image from gallery
-//                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-//                //Setting image to ImageView
-//                Profile.setImageBitmap(bitmap);
-//                uploadImage();  //upload to firebase
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//        }
+    private void setupViewPager(ViewPager viewPager) {
+        MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
+        if(gameFragment == null) gameFragment = new GameFragment();
+        if(searchFragment == null) searchFragment = new SearchableFragment();
+        if(profileFragment == null) profileFragment = new ProfileFragment();
+        adapter.addFragment(searchFragment);
+        adapter.addFragment(gameFragment);
+        adapter.addFragment(profileFragment);
+        viewPager.setAdapter(adapter);
     }
 }

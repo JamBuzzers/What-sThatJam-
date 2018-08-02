@@ -15,6 +15,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.jambuzzers.whatsthatjam.model.SocketPlayer;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -24,10 +26,13 @@ import butterknife.ButterKnife;
  */
 public class GameFragment extends Fragment {
 
+    private SocketPlayer mSocketPlayer; //check for null pointers
+
 
     @BindView(R.id.guess_btn) Button stopBtn;
     @BindView(R.id.etGuess) EditText etSongGuess;
     @BindView(R.id.tv_timer) TextView tvTimer;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -35,7 +40,6 @@ public class GameFragment extends Fragment {
         ButterKnife.bind(this,view);
         return view;
     }
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -55,8 +59,8 @@ public class GameFragment extends Fragment {
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mSocketPlayer.pause();
                 initGuessAccess();
-                //TODO: Stop music after designated time...call function that handles that...
             }
         });
         etSongGuess.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -64,10 +68,9 @@ public class GameFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if(i == EditorInfo.IME_ACTION_DONE){
+                    // socketPlayer.onPause();
                     etSongGuess.setEnabled(false);
                 }
-                //TODO send to response to server
-
                 return handled;
             }
         });
@@ -79,7 +82,6 @@ public class GameFragment extends Fragment {
     public void timesUp(){
         stopBtn.setEnabled(false);
         etSongGuess.setEnabled(false);
-        //Toast.makeText(getActivity(), "Done", Toast.LENGTH_SHORT).show();
     }
 
     public static GameFragment newInstance(String text) {
@@ -89,5 +91,9 @@ public class GameFragment extends Fragment {
         frag.setArguments(b);
 
         return frag;
+    }
+
+    public void setListener(SocketPlayer listener) {
+        mSocketPlayer = listener;
     }
 }
