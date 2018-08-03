@@ -3,12 +3,18 @@ package com.jambuzzers.whatsthatjam.model;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class FirebaseQueries {
     final static FirebaseFirestore database = FirebaseFirestore.getInstance();
-
+    final static FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+            .setTimestampsInSnapshotsEnabled(true)
+            .build();
+    public static void removeError(){
+        database.setFirestoreSettings(settings);
+    }
     public static void getActive(String search, OnCompleteListener complete){
         String start = search.substring(0,search.length()-1)+(char)((int)search.charAt(search.length()-1)-1);
         String end = search.substring(0,search.length()-1)+(char)((int)search.charAt(search.length()-1)+1);
