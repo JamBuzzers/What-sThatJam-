@@ -194,7 +194,16 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         });
 
     }
-
+    @Override
+    public void onReceiveId(final String id){
+        Log.d("ID IS,",id);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, id, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     @Override
     public void onInvite(final int gameId) {
         runOnUiThread(new Runnable() {

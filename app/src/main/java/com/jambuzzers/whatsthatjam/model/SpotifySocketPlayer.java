@@ -119,6 +119,13 @@ public class SpotifySocketPlayer implements SocketPlayer {
                 Log.d("LOGGING_SERVER", string);
             }
         });
+        mSocket.on("id", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                String id  = (String) args[0];
+                listener.onReceiveId(id);
+            }
+        });
     }
 }
 

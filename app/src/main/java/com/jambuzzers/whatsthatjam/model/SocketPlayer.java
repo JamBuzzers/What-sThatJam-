@@ -13,5 +13,6 @@ public interface SocketPlayer  {
         void onPlay();
         void onPlayerPause();
         void onInvite(int gameId);
+        void onReceiveId(String id);
     }
 }
