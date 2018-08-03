@@ -13,7 +13,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 
@@ -44,7 +43,7 @@ public class GameFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        new CountDownTimer(15000, 1000) {
+        new CountDownTimer(150000000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 tvTimer.setText("seconds remaining: " + millisUntilFinished / 1000);
@@ -68,7 +67,11 @@ public class GameFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if(i == EditorInfo.IME_ACTION_DONE){
-                    // socketPlayer.onPause();
+                    // socketPlayer.onPlayerPause();
+                    //etSongGuess.setEnabled(false);
+                    String songGuess = textView.getText().toString();
+                    mSocketPlayer.answer(songGuess);
+                    stopBtn.setEnabled(true);
                     etSongGuess.setEnabled(false);
                 }
                 return handled;

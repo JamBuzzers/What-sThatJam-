@@ -1,7 +1,6 @@
 package com.jambuzzers.whatsthatjam;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +10,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -37,7 +38,7 @@ public class CreateGameFragment extends Fragment {
     ArrayList<User> users;
     ArrayList<User> allUsers;
     ArrayList<User> invitees= new ArrayList<User>();
-    private OnFragmentInteractionListener mListener;
+    private CreateGameListener mListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -64,8 +65,9 @@ public class CreateGameFragment extends Fragment {
                 //TODO Invite using socket player
                 JSONArray arr = new JSONArray();
                 for(User u : invitees){
-                    arr.put(u.username);
+                    arr.put(u.id);
                 }
+                mListener.createGame(arr);
                 return false;
             }
 
@@ -90,7 +92,7 @@ public class CreateGameFragment extends Fragment {
                             users.add(u);
                     }
                 }
-
+                searchableAdapter.notifyDataSetChanged();
                 return false;
             }
         });
@@ -100,8 +102,8 @@ public class CreateGameFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof CreateGameListener) {
+            mListener = (CreateGameListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -115,8 +117,56 @@ public class CreateGameFragment extends Fragment {
     }
 
 
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    public interface CreateGameListener {
+        void createGame(JSONArray invitees);
+    }
+
+    public class CreateGameAdapter extends RecyclerView.Adapter<CreateGameAdapter.ViewHolder> {
+
+        ArrayList<User> users;
+        ArrayList<User> invitees;
+
+        public CreateGameAdapter(ArrayList<User> u, ArrayList<User> inv) {
+            invitees = inv;
+            users = u;
+        }
+
+        @Override
+        public CreateGameAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            Context context = viewGroup.getContext();
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View searchView = inflater.inflate(R.layout.item_search, viewGroup, false);
+
+            CreateGameAdapter.ViewHolder viewHolder = new CreateGameAdapter.ViewHolder(searchView);
+            return viewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull CreateGameAdapter.ViewHolder holder, final int position) {
+            holder.name.setText(users.get(position).username);
+            holder.name.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    invitees.add(users.get(position));
+                    Toast.makeText(getContext(),"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return users.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            @BindView(R.id.tvName)
+            TextView name;
+
+            public ViewHolder(View itemView) {
+                super(itemView);
+                ButterKnife.bind(this, itemView);
+            }
+
+        }
     }
 }
