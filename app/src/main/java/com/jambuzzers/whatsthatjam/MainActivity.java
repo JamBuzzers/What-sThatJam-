@@ -3,6 +3,8 @@
 // Copyright (c) 2017 Spotify. All rights reserved.
 package com.jambuzzers.whatsthatjam;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,7 +18,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
@@ -48,6 +49,29 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment, loginFrag).commit();
+
+        //ALERT DIALOG
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
+        // Add the buttons
+        builder.setMessage("You've been invited to play a game");
+        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked OK button
+                //Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User cancelled the dialog
+                //Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        //dialog.getWindow().setGravity(Gravity.TOP);
+        dialog.show();
+
 
         //Initializing viewPager
         viewPager = findViewById(R.id.view_pager);
@@ -198,4 +222,3 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         viewPager.setAdapter(adapter);
     }
 }
-

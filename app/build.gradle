@@ -36,7 +36,6 @@ dependencies {
 
     debugImplementation 'com.facebook.sonar:sonar:0.6.13'
 
-
     implementation 'com.android.support:recyclerview-v7:28.0.0-alpha3'  //recycler view dependency
 
     // This library handles authentication and authorization

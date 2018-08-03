@@ -17,4 +17,3 @@ public class User {
         id = (String)document.getData().get("id");
     }
 }
-
