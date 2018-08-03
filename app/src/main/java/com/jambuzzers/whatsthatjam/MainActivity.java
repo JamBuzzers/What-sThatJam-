@@ -17,9 +17,14 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
+import com.jambuzzers.whatsthatjam.model.User;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Spotify;
@@ -32,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
     private BottomNavigationView navigation;
     private ViewPager viewPager;
 
+    MyPagerAdapter adapter;
+
     //define fragments
     SearchableFragment searchFragment;
     GameFragment gameFragment;
@@ -41,6 +48,9 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
     SocketPlayer player;
 
+    //current user
+    User mCurrentUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +58,8 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.fragment, loginFrag).commit();
+
+
 
         //Initializing viewPager
         viewPager = findViewById(R.id.view_pager);
@@ -111,8 +123,25 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             player = new SpotifySocketPlayer(response, this, this);
             gameFragment.setListener(player);
+            ///fired off request for current user
+            FirebaseQueries.queryAllUsernames(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        Log.d("tag", "task was successful");
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+//                            if (document.getData().get("token").equals(player.token)) {
+//                                mCurrentUser = new User(document);
+//                                // update fragment for current user
+//                                profileFragment.setUser(mCurrentUser);
+//                            }
+                        }
+                    } else {
+                        Log.d("tag", "Error getting document: ", task.getException());
+                    }
+                }
+            });
         }
-
     }
 
     @Override
@@ -186,16 +215,21 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         private void addFragment(Fragment fragment) {
             mFragmentList.add(fragment);
         }
+        private void removeFragment(Fragment fragment) {
+            mFragmentList.remove(fragment);
+        }
     }
+
     private void setupViewPager(ViewPager viewPager) {
-        MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
+        adapter = new MyPagerAdapter(getSupportFragmentManager());
         if(gameFragment == null) gameFragment = new GameFragment();
         if(searchFragment == null) searchFragment = new SearchableFragment();
-        if(profileFragment == null) profileFragment = new ProfileFragment();
+        if(profileFragment == null ) {
+            profileFragment =  ProfileFragment.newProfFrag(mCurrentUser);
+        }
         adapter.addFragment(searchFragment);
         adapter.addFragment(gameFragment);
         adapter.addFragment(profileFragment);
         viewPager.setAdapter(adapter);
     }
 }
-

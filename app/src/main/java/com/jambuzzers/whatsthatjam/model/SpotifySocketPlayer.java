@@ -43,7 +43,7 @@ public class SpotifySocketPlayer implements SocketPlayer {
         }
         listener = l;
         try {
-             mSocket = IO.socket(SERVER_URL);
+            mSocket = IO.socket(SERVER_URL);
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
@@ -119,6 +119,3 @@ public class SpotifySocketPlayer implements SocketPlayer {
         });
     }
 }
-
-
-

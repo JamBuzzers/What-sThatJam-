@@ -5,6 +5,10 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class FirebaseQueries {
     final static FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -26,5 +30,23 @@ public class FirebaseQueries {
         database.collection("users")
                 .get()
                 .addOnCompleteListener(onCompleteListener);
+    }
+
+    public static void updatePic(String user, String picUrl) {
+        Map<String, Object> update = new HashMap<>();
+        update.put("profileurl", picUrl);
+        database.collection("users")
+                .document(user)
+                .set(update, SetOptions.merge());
+    }
+    public static void getCurrentUser(String acessToken, OnCompleteListener<QuerySnapshot> complete){
+        if (acessToken == null) {
+            return;
+        }
+        database.collection("users")
+                .whereGreaterThan("token", acessToken.substring(0, acessToken.length() - 2))
+                .whereLessThan("token", acessToken +"\uf8ff")
+                .get()
+                .addOnCompleteListener(complete);
     }
 }
