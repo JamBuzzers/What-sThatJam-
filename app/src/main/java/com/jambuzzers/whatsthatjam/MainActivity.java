@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
+import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Spotify;
@@ -34,7 +35,8 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements GameLandingFragment.GameLandingListener,CreateGameFragment.CreateGameListener{
+
+public class MainActivity extends AppCompatActivity implements SocketPlayer.SocketPlayerListener,GameLandingFragment.GameLandingListener,CreateGameFragment.CreateGameListener {
 
     private BottomNavigationView navigation;
     private ViewPager viewPager;
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     GameLandingFragment gameLanding;
     CreateGameFragment createGame;
     MenuItem prevMenuItem;
-    final Fragment loginFrag = new LoginFragment();
+    Fragment loginFrag;
 
     SocketPlayer player;
 
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         setContentView(R.layout.activity_main);
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        loginFrag = new LoginFragment();
         ft.replace(R.id.fragment, loginFrag).commit();
 
         //Initializing viewPager
@@ -94,11 +97,10 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
             public void onPageSelected(int position) {
                 if (prevMenuItem != null) {
                     prevMenuItem.setChecked(false);
-                }
-                else {
+                } else {
                     navigation.getMenu().getItem(0).setChecked(false);
                 }
-                Log.d("page", "onPageSelected: "+position);
+                Log.d("page", "onPageSelected: " + position);
                 navigation.getMenu().getItem(position).setChecked(true);
                 prevMenuItem = navigation.getMenu().getItem(position);
 
@@ -109,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
 
             }
         });
-        FirebaseQueries.getActive("cal",new OnCompleteListener<QuerySnapshot>() {
+        FirebaseQueries.getActive("cal", new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 for (DocumentSnapshot document : task.getResult().getDocuments())
@@ -119,74 +121,12 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         setupViewPager(viewPager);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == LoginFragment.REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            player = new SocketPlayer(response, this, new SocketPlayer.SocketPlayerListener() {
-                @Override
-                public void onResume() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onPlay() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onPause() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onInvite(int gameId) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
-                            // Add the buttons
-                            builder.setMessage("You've been invited to play a game");
-                            builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // User clicked OK button
-                                    //Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                            builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int id) {
-                                    // User cancelled the dialog
-                                    //Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
-                                    dialog.cancel();
-                                }
-                            });
-                            // Create the AlertDialog
-                            AlertDialog dialog = builder.create();
-//        dialog.getWindow().setGravity(Gravity.TOP);
-                            dialog.show();
-                        }
-                    });
-                    player.acceptGame(gameId);
-                }
-            });
+            player = new SpotifySocketPlayer(response, this, this);
             gameFragment.setListener(player);
         }
 
@@ -199,10 +139,10 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        adapter= new cAdapter(getSupportFragmentManager());
-        if(gameFragment == null) gameFragment = new GameFragment();
-        if(searchFragment == null) searchFragment = new SearchableFragment();
-        if(profileFragment == null) profileFragment = new ProfileFragment();
+        adapter = new cAdapter(getSupportFragmentManager());
+        if (gameFragment == null) gameFragment = new GameFragment();
+        if (searchFragment == null) searchFragment = new SearchableFragment();
+        if (profileFragment == null) profileFragment = new ProfileFragment();
 
         createGame = new CreateGameFragment();
         gameLanding = new GameLandingFragment();
@@ -211,22 +151,88 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         adapter.addFragment(gameLanding);
         adapter.addFragment(profileFragment);
         viewPager.setAdapter(adapter);
-        //adapter.replaceFragment(createGame,0);
-        //viewPager.setCurrentItem(1);
 
     }
 
     //Interfaces
-    public void onRandom(){
+    public void onRandom() {
+    }
+
+    @Override
+    public void onPlayerResume() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
-    public void onCreate(){
-        adapter.replaceFragment(createGame,1);
+    @Override
+    public void onPlay() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
+                adapter.replaceFragment(gameFragment,1);
+            }
+        });
 
     }
-    public void createGame(JSONArray invitees){
-        Toast.makeText(this,"creating game",Toast.LENGTH_SHORT).show();
+
+    @Override
+    public void onPlayerPause() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onInvite(final int gameId) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
+                        // Add the buttons
+                        builder.setMessage("You've been invited to play a game");
+                        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User clicked OK button
+                                Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
+                                player.acceptGame(gameId);
+                                dialog.cancel();
+                            }
+                        });
+                        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                                Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
+                                dialog.cancel();
+                            }
+                        });
+                        // Create the AlertDialog
+                        AlertDialog dialog = builder.create();
+//        dialog.getWindow().setGravity(Gravity.TOP);
+                        dialog.show();
+
+            }
+        });
+
+    }
+
+    public void onCreate() {
+        adapter.replaceFragment(createGame, 1);
+
+    }
+
+    public void createGame(JSONArray invitees) {
+        Toast.makeText(this, "creating game", Toast.LENGTH_SHORT).show();
         player.initiateGame(invitees);
     }
     private class cAdapter extends FragmentStatePagerAdapter {
@@ -257,69 +263,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
             mFragmentList.remove(index);
             mFragmentList.add(index, fragment);
             notifyDataSetChanged();
-        }    }
-
-//    @Override
-//    public void onBackPressed() {
-//        if(viewPager.getCurrentItem() == 0) {
-//            if (adapter.getItem(0) instanceof CreateGameFragment) {
-//                ((CreateGameFragment) adapter.getItem(0)).backPressed();
-//            }
-//            else if (adapter.getItem(0) instanceof GameLandingFragment) {
-//                finish();
-//            }
-//        }
-//    }
-//
-//
-//    private static class MyAdapter extends FragmentPagerAdapter {
-//
-//        int gamepage;
-//        GameLandingFragment gl;
-//        CreateGameFragment cg;
-//        SearchableFragment sf;
-//
-//        public MyAdapter(FragmentManager fragmentManager, GameLandingFragment gl, CreateGameFragment cg, SearchableFragment sf ) {
-//            super(fragmentManager);
-//            this.gl = gl;
-//            this.sf = sf;
-//            this.cg = cg;
-//            gamepage = 0;
-//        }
-//
-//        @Override
-//        public Fragment getItem(int position) {
-//            switch (position) {
-//                case 0: // Fragment # 0
-//                    return
-//                case 1: // Fragment # 1
-//                    if (gamepage == 0)
-//                        return gl;
-//                    else
-//                        return cg;                case 2:// Fragment # 2
-//                    return new LecturaFragment();
-//            }
-//            return null;
-//        }
-//
-//        @Override
-//        public int getCount() {
-//            return titles.length;
-//        }
-//
-//        @Override
-//        public int getItemPosition(Object object)
-//        {
-//            if (object instanceof CreateGameFragment &&
-//                    mFragmentAtPos0 instanceof GameLandingFragment) {
-//                return POSITION_NONE;
-//            }
-//            if (object instanceof GameLandingFragment &&
-//                    mFragmentAtPos0 instanceof CreateGameFragment) {
-//                return POSITION_NONE;
-//            }
-//            return POSITION_UNCHANGED;
-//        }
-
+        }
     }
+}
 
