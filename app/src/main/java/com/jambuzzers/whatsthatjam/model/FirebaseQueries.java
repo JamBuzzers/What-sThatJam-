@@ -12,6 +12,7 @@ public class FirebaseQueries {
     final static FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
             .setTimestampsInSnapshotsEnabled(true)
             .build();
+    // YOU MUST CALL THIS METHOD BEFORE ANYOTHER CALLS
     public static void removeError(){
         database.setFirestoreSettings(settings);
     }
