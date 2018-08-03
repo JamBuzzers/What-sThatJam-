@@ -12,7 +12,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -27,6 +26,7 @@ import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Spotify;
 
@@ -48,18 +48,21 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
     GameLandingFragment gameLanding;
     CreateGameFragment createGame;
     MenuItem prevMenuItem;
-    Fragment loginFrag;
 
     SocketPlayer player;
 
+    public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
+    private static final String REDIRECT_URI = "https://www.google.com/";
+    public static final int REQUEST_CODE = 1337;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        loginFrag = new LoginFragment();
-        ft.replace(R.id.fragment, loginFrag).commit();
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+        builder.setScopes(new String[]{"user-read-private", "streaming"});
+        AuthenticationRequest request = builder.build();
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
         //Initializing viewPager
         viewPager = findViewById(R.id.view_pager);
@@ -124,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == LoginFragment.REQUEST_CODE) {
+        if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             player = new SpotifySocketPlayer(response, this, this);
             gameFragment.setListener(player);
