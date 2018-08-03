@@ -23,7 +23,6 @@ public class GameLandingFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
     }
 
     @Override
@@ -31,7 +30,7 @@ public class GameLandingFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view= inflater.inflate(R.layout.fragment_game_landing, container, false);
-        ButterKnife.bind(view);
+        ButterKnife.bind(this,view);
         btCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
