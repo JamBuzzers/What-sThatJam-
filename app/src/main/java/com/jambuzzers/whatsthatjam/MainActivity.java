@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
+import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Spotify;
@@ -26,7 +27,7 @@ import com.spotify.sdk.android.player.Spotify;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SocketPlayer.SocketPlayerListener{
 
     private BottomNavigationView navigation;
     private ViewPager viewPager;
@@ -103,54 +104,12 @@ public class MainActivity extends AppCompatActivity {
         setupViewPager(viewPager);
     }
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == LoginFragment.REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            player = new SocketPlayer(response, this, new SocketPlayer.SocketPlayerListener() {
-                @Override
-                public void onResume() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onPlay() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onPause() {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onInvite(int gameId) {
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    player.acceptGame(gameId);
-                }
-            });
+            player = new SpotifySocketPlayer(response, this, this);
             gameFragment.setListener(player);
         }
 
@@ -160,6 +119,51 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
         super.onDestroy();
+    }
+
+    @Override
+    public void onPlayerResume() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onPlay() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onPlayerPause() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onInvite(final int gameId) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
+                player.acceptGame(gameId);
+            }
+        });
+
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {
