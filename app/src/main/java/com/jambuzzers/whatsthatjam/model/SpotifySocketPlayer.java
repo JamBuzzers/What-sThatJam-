@@ -64,6 +64,12 @@ public class SpotifySocketPlayer implements SocketPlayer {
     public void acceptGame(int gameId){
         mSocket.emit("accept", gameId);
     }
+
+    @Override
+    public String getToken() {
+        return token;
+    }
+
     private void login(){
         mSocket.emit("login",token);
     }

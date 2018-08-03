@@ -130,11 +130,11 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
                     if (task.isSuccessful()) {
                         Log.d("tag", "task was successful");
                         for (QueryDocumentSnapshot document : task.getResult()) {
-//                            if (document.getData().get("token").equals(player.token)) {
-//                                mCurrentUser = new User(document);
-//                                // update fragment for current user
-//                                profileFragment.setUser(mCurrentUser);
-//                            }
+                            if (document.getData().get("token").equals(player.getToken())) {
+                                mCurrentUser = new User(document);
+                                // update fragment for current user
+                                profileFragment.setUser(mCurrentUser);
+                            }
                         }
                     } else {
                         Log.d("tag", "Error getting document: ", task.getException());
