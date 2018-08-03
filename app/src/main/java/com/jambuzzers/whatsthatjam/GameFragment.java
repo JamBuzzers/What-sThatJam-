@@ -13,7 +13,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 
@@ -68,7 +67,7 @@ public class GameFragment extends Fragment {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if(i == EditorInfo.IME_ACTION_DONE){
-                    // socketPlayer.onPause();
+                    // socketPlayer.onPlayerPause();
                     etSongGuess.setEnabled(false);
                 }
                 return handled;
