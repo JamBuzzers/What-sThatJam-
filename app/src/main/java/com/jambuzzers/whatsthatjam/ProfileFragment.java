@@ -1,7 +1,6 @@
 package com.jambuzzers.whatsthatjam;
 
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,18 +18,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.User;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 import butterknife.BindView;
@@ -54,16 +48,21 @@ public class ProfileFragment extends Fragment  {
     Uri filePath;
 
     String username;
-
     //Firebase
     FirebaseStorage storage;
     StorageReference storageReference;
 
+    User user;
+
+    public static ProfileFragment newProfFrag(User u){
+        ProfileFragment pFrag = new ProfileFragment();
+        pFrag.user = u;
+        return pFrag;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        username = getArguments().getString("username", "");
-
     }
 
     ProfileInterface listener;
@@ -76,6 +75,9 @@ public class ProfileFragment extends Fragment  {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this,view);
+        if (user != null) {
+            Name.setText(user.username);
+        }
         return view;
     }
 
@@ -92,20 +94,6 @@ public class ProfileFragment extends Fragment  {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        firebaseDatabase.getReference("users").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                GenericTypeIndicator<HashMap<String, User>> t = new GenericTypeIndicator<HashMap<String, User>>(){};
-                HashMap<String, User> dataset = dataSnapshot.getValue(t);
-                if (dataset != null) {
-                        //Name.setText(dataset.get(username));
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-            }
-        });
 
         Logout_btn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -115,13 +103,13 @@ public class ProfileFragment extends Fragment  {
         });
     }
 
-    public static ProfileFragment newInstance(String username) {
-        ProfileFragment frag = new ProfileFragment();
-        Bundle b = new Bundle();
-        b.putString("username", username);
-        frag.setArguments(b);
-        return frag;
-    }
+//    public static ProfileFragment newInstance(String username) {
+//        ProfileFragment frag = new ProfileFragment();
+//        Bundle b = new Bundle();
+//        b.putString("username", username);
+//        frag.setArguments(b);
+//        return frag;
+//    }
 
     public void onChangeImage() {
         Intent intent = new Intent();
@@ -142,7 +130,9 @@ public class ProfileFragment extends Fragment  {
 
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    String photoUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
                     progressDialog.dismiss();
+                    FirebaseQueries.updatePic(username,photoUrl); // TODO: get user
                     Toast.makeText(getActivity(),"Uploaded", Toast.LENGTH_SHORT).show();
                 }
             })
@@ -165,15 +155,15 @@ public class ProfileFragment extends Fragment  {
         }
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ProfileFragment.ProfileInterface) {
-            listener = (ProfileInterface) context;
-        } else {
-            throw new ClassCastException(context.toString() + " must implement MyListFragment.OnItemSelectedListener");
-        }
-    }
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        if (context instanceof ProfileFragment.ProfileInterface) {
+//            listener = (ProfileInterface) context;
+//        } else {
+//            throw new ClassCastException(context.toString() + " must implement MyListFragment.OnItemSelectedListener");
+//        }
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
@@ -191,6 +181,11 @@ public class ProfileFragment extends Fragment  {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        Name.setText(user.username);
     }
 
 }

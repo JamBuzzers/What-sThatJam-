@@ -22,7 +22,7 @@ public class SocketPlayer {
     private SpotifyPlayer spotifyplayer;
     private Socket mSocket;
     private SocketPlayerListener listener;
-    private String token;
+    public String token;
 
     public interface SocketPlayerListener {
          void onResume();
