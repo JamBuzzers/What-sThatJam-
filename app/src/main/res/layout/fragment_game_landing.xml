@@ -16,7 +16,7 @@
         android:background="@drawable/gamev"
         android:scaleType="centerCrop" />
 
-    <Buttons
+    <Button
         android:id="@+id/btRandom"
         android:layout_width="300dp"
         android:layout_height="wrap_content"

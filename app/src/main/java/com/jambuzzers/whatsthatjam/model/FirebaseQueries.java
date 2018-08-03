@@ -13,7 +13,7 @@ public class FirebaseQueries {
         String start = search.substring(0,search.length()-1)+(char)((int)search.charAt(search.length()-1)-1);
         String end = search.substring(0,search.length()-1)+(char)((int)search.charAt(search.length()-1)+1);
         CollectionReference users = database.collection("users");
-        Query query = users.whereEqualTo("active", false).whereLessThan("name",end).whereGreaterThan("name",start);
+        Query query = users.whereEqualTo("active", true).whereLessThan("name",end).whereGreaterThan("name",start);
         query.get().addOnCompleteListener(complete);
     }
     public static void queryUserName(String username, OnCompleteListener<QuerySnapshot> onCompleteListener){
