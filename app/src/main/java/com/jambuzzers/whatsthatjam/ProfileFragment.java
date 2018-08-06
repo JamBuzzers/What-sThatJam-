@@ -126,7 +126,7 @@ public class ProfileFragment extends Fragment  {
             progressDialog.show();
             StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
 
-            ref.putFile(filePath) .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
 
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {

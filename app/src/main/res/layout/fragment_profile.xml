@@ -16,8 +16,6 @@
         android:background="#ffffff"
         android:src="@drawable/instagram_user_filled_24" />
 
-
-
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
