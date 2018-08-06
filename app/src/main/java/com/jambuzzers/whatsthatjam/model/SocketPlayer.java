@@ -16,5 +16,6 @@ public interface SocketPlayer  {
         void onReceiveId(String id);
         void onResult(String result);
         void onScore(int score);
+        void onFinalScore(int score, boolean won);
     }
 }

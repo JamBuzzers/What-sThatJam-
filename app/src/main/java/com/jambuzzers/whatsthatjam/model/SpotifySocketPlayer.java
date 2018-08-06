@@ -131,7 +131,7 @@ public class SpotifySocketPlayer implements SocketPlayer {
             @Override
             public void call(Object... args) {
                 String result = (String) args[0];
-                listener.onReceiveId(result);
+                listener.onResult(result);
             }
         });
         mSocket.on("score", new Emitter.Listener() {
@@ -139,6 +139,18 @@ public class SpotifySocketPlayer implements SocketPlayer {
             public void call(Object... args) {
                 int score = (int) args[0];
                 listener.onScore(score);
+            }
+        });
+        mSocket.on("final score", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                int score = (int) args[0];
+                boolean won;
+                if((int) args[1]==1)
+                    won= true;
+                else
+                    won = false;
+                listener.onFinalScore(score,won);
             }
         });
     }
