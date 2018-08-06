@@ -6,7 +6,6 @@ import android.util.Log;
 import com.github.nkzawa.emitter.Emitter;
 import com.github.nkzawa.socketio.client.IO;
 import com.github.nkzawa.socketio.client.Socket;
-import com.jambuzzers.whatsthatjam.LoginFragment;
 import com.jambuzzers.whatsthatjam.MainActivity;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Config;
@@ -29,7 +28,7 @@ public class SpotifySocketPlayer implements SocketPlayer {
         if (response.getType() == AuthenticationResponse.Type.TOKEN) {
             Log.d("TOKEN",response.getAccessToken());
             token = response.getAccessToken();
-            Config playerConfig = new Config(context, response.getAccessToken(), LoginFragment.CLIENT_ID);
+            Config playerConfig = new Config(context, response.getAccessToken(), MainActivity.CLIENT_ID);
             Spotify.getPlayer(playerConfig, context, new SpotifyPlayer.InitializationObserver() {
                 @Override
                 public void onInitialized(SpotifyPlayer spotifyPlayer) {
@@ -40,6 +39,9 @@ public class SpotifySocketPlayer implements SocketPlayer {
                     Log.e("MainActivity", "Could not initialize player: " + throwable.getMessage());
                 }
             });
+        }
+        else{
+            Log.d("ERROR","LOGIN FAILED");
         }
         listener = l;
         try {
@@ -64,12 +66,6 @@ public class SpotifySocketPlayer implements SocketPlayer {
     public void acceptGame(int gameId){
         mSocket.emit("accept", gameId);
     }
-
-    @Override
-    public String getToken() {
-        return token;
-    }
-
     private void login(){
         mSocket.emit("login",token);
     }
@@ -121,6 +117,13 @@ public class SpotifySocketPlayer implements SocketPlayer {
             public void call(Object... args) {
                 String string  = (String) args[0];
                 Log.d("LOGGING_SERVER", string);
+            }
+        });
+        mSocket.on("id", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                String id  = (String) args[0];
+                listener.onReceiveId(id);
             }
         });
     }
