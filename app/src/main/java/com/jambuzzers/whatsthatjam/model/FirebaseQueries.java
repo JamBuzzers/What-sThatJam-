@@ -2,6 +2,8 @@ package com.jambuzzers.whatsthatjam.model;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 import com.google.firebase.firestore.Query;
@@ -29,16 +31,15 @@ public class FirebaseQueries {
     }
     public static void queryUserName(String username, OnCompleteListener<QuerySnapshot> onCompleteListener){
         database.collection("users")
-                .whereEqualTo("username", username)
+                .whereEqualTo("name", username)
                 .get()
                 .addOnCompleteListener(onCompleteListener);
     }
     public static void queryAllUsernames(OnCompleteListener<QuerySnapshot> onCompleteListener){
-        database.collection("users")
+        database.collection("username")
                 .get()
                 .addOnCompleteListener(onCompleteListener);
     }
-
 
     public static void updatePic(String user, String picUrl) {
         Map<String, Object> update = new HashMap<>();
@@ -47,6 +48,7 @@ public class FirebaseQueries {
                 .document(user)
                 .set(update, SetOptions.merge());
     }
+
     public static void getCurrentUser(String acessToken, OnCompleteListener<QuerySnapshot> complete){
         if (acessToken == null) {
             return;
@@ -56,5 +58,10 @@ public class FirebaseQueries {
                 .whereLessThan("token", acessToken +"\uf8ff")
                 .get()
                 .addOnCompleteListener(complete);
+    }
+    public static void userById(String id, OnCompleteListener<DocumentSnapshot> callback){
+        DocumentReference docRef = database.collection("users").document(id);
+        docRef.get().addOnCompleteListener(callback);
+
     }
 }

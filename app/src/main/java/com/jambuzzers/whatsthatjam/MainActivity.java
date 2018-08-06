@@ -81,9 +81,6 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
                             case R.id.play:
                                 viewPager.setCurrentItem(1);
                                 break;
-                            case R.id.profile:
-                                viewPager.setCurrentItem(2);
-                                break;
 
                             default:
                         }
@@ -153,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
         adapter.addFragment(searchFragment);
         adapter.addFragment(gameLanding);
-        adapter.addFragment(profileFragment);
+        //adapter.addFragment(profileFragment);
         viewPager.setAdapter(adapter);
 
     }
@@ -202,8 +199,35 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, id, Toast.LENGTH_SHORT).show();
+                ProfileFragment pf = ProfileFragment.newInstance(id);
+                //adapter.replaceFragment(pf,2);
+                adapter.addFragment(pf);
+                adapter.notifyDataSetChanged();
+                navigation = findViewById(R.id.bottom_navigation);
+                navigation.setOnNavigationItemSelectedListener(
+                        new BottomNavigationView.OnNavigationItemSelectedListener() {
+                            @Override
+                            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.search:
+                                        viewPager.setCurrentItem(0);
+                                        break;
+                                    case R.id.play:
+                                        viewPager.setCurrentItem(1);
+                                        break;
+                                    case R.id.profile:
+                                        viewPager.setCurrentItem(2);
+                                        break;
+
+                                    default:
+                                }
+                                return false;
+                            }
+                        });
             }
         });
+        //profileFragment.setUsername(id);
+
     }
     @Override
     public void onInvite(final int gameId) {

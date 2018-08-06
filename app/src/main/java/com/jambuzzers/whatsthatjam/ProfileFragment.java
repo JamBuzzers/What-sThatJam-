@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +17,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -51,6 +59,7 @@ public class ProfileFragment extends Fragment  {
     //Firebase
     FirebaseStorage storage;
     StorageReference storageReference;
+    DatabaseReference Ref;
 
     User user;
 
@@ -59,6 +68,8 @@ public class ProfileFragment extends Fragment  {
         pFrag.user = u;
         return pFrag;
     }
+
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,9 +86,18 @@ public class ProfileFragment extends Fragment  {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this,view);
-        if (user != null) {
-            Name.setText(user.username);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(getArguments() != null)
+        {
+            username = getArguments().getString("username");
+            Name.setText(username);
         }
+        /*if (user != null) {
+            //username = user.getDisplayName();
+            //Name.setText(user.getDisplayName());
+            Name.setText(username);
+            //username = FirebaseQueries.getCurrentUser();
+        }*/
         return view;
     }
 
@@ -101,15 +121,51 @@ public class ProfileFragment extends Fragment  {
                 //do something
             }
         });
+
+
+        Ref = FirebaseDatabase.getInstance().getReference().child("users");
+        FirebaseQueries.userById(username, new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                String TAG = "BY ID";
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        String url = document.get("profileurl").toString();
+                        GlideApp.with(getContext())
+                                .load(url)
+                                //.load(task.getResult().getDocuments().get(0).get("profileurl"))
+                                .into(Profile);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+
+        /*FirebaseQueries.queryUserName("username", new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                GlideApp.with(getContext())
+                        .load("profileurl")
+                        //.load(task.getResult().getDocuments().get(0).get("profileurl"))
+                        .into(Profile);
+            }
+        });*/
+
     }
 
-//    public static ProfileFragment newInstance(String username) {
-//        ProfileFragment frag = new ProfileFragment();
-//        Bundle b = new Bundle();
-//        b.putString("username", username);
-//        frag.setArguments(b);
-//        return frag;
-//    }
+    public static ProfileFragment newInstance(String username) {
+        ProfileFragment frag = new ProfileFragment();
+        Bundle b = new Bundle();
+        b.putString("username", username);
+        frag.setArguments(b);
+        return frag;
+    }
 
     public void onChangeImage() {
         Intent intent = new Intent();
@@ -127,13 +183,17 @@ public class ProfileFragment extends Fragment  {
             StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
 
             ref.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    String photoUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl().toString();
-                    progressDialog.dismiss();
-                    FirebaseQueries.updatePic(username,photoUrl); // TODO: get user
-                    Toast.makeText(getActivity(),"Uploaded", Toast.LENGTH_SHORT).show();
+                    taskSnapshot.getMetadata().getReference().getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String photoUrl = uri.toString();
+                            progressDialog.dismiss();
+                            FirebaseQueries.updatePic(username,photoUrl); // TODO: get user
+                            Toast.makeText(getActivity(),"Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             })
             .addOnFailureListener(new OnFailureListener() {
@@ -181,11 +241,6 @@ public class ProfileFragment extends Fragment  {
                 e.printStackTrace();
             }
         }
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-        Name.setText(user.username);
     }
 
 }
