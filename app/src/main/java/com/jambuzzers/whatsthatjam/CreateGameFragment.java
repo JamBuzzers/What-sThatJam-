@@ -81,9 +81,9 @@ public class CreateGameFragment extends Fragment {
                             for (DocumentSnapshot document : task.getResult().getDocuments())
                                 users.add(new User(document));
                             searchableAdapter.notifyDataSetChanged();
+                            allUsers.addAll(users);
                         }
                     });
-                    allUsers.addAll(users);
                 }
                 else{
                     users.clear();

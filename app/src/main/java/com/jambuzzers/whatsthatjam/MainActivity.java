@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
     }
     @Override
-    public void onInvite(final int gameId) {
+    public void onInvite(final int gameId, final String creator) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -257,12 +257,46 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
                 AlertDialog dialog = builder.create();
 //        dialog.getWindow().setGravity(Gravity.TOP);
                 dialog.show();
-
             }
         });
 
     }
-
+    @Override
+    public void onResult(final String result){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    @Override
+    public void onScore(final int score){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, ""+score, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    @Override
+    public void onFinalScore(final int score, final boolean won){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Final Score: "+score, Toast.LENGTH_SHORT).show();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(won)
+                    Toast.makeText(MainActivity.this, "You won", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(MainActivity.this, "You lost", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     public void onCreate() {
         adapter.replaceFragment(createGame, 1);
 

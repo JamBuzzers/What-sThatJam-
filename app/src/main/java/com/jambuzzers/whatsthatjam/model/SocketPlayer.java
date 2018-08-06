@@ -12,7 +12,10 @@ public interface SocketPlayer  {
         void onPlayerResume();
         void onPlay();
         void onPlayerPause();
-        void onInvite(int gameId);
+        void onInvite(int gameId, String creator);
         void onReceiveId(String id);
+        void onResult(String result);
+        void onScore(int score);
+        void onFinalScore(int score, boolean won);
     }
 }
