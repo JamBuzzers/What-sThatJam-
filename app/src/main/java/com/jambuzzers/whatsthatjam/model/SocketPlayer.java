@@ -7,12 +7,13 @@ public interface SocketPlayer  {
     void answer(String answer);
     void initiateGame(JSONArray invitees);
     void acceptGame(int gameId);
+    String getToken();
     //TODO: Move onDestroy
+
     interface SocketPlayerListener {
         void onPlayerResume();
         void onPlay();
         void onPlayerPause();
         void onInvite(int gameId);
-        void onReceiveId(String id);
     }
 }
