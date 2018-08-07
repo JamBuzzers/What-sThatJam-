@@ -3,89 +3,337 @@
 // Copyright (c) 2017 Spotify. All rights reserved.
 package com.jambuzzers.whatsthatjam;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MenuItem;
+import android.widget.Toast;
 
-import android.widget.Button;
-
-
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
+import com.jambuzzers.whatsthatjam.model.SocketPlayer;
+import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
-import com.spotify.sdk.android.player.Player;
 import com.spotify.sdk.android.player.Spotify;
 
+import org.json.JSONArray;
 
-public class MainActivity extends AppCompatActivity{
+import java.util.ArrayList;
+import java.util.List;
 
-    final FragmentManager fragmentManager = getSupportFragmentManager();
-    final Fragment loginFrag = new LoginFragment();
-    private Player mPlayer;
 
+public class MainActivity extends AppCompatActivity implements SocketPlayer.SocketPlayerListener,GameLandingFragment.GameLandingListener,CreateGameFragment.CreateGameListener {
+
+    private BottomNavigationView navigation;
+    private ViewPager viewPager;
+    cAdapter adapter;
+    //define fragments
+    SearchableFragment searchFragment;
+    GameFragment gameFragment;
+    ProfileFragment profileFragment;
+    GameLandingFragment gameLanding;
+    CreateGameFragment createGame;
+    MenuItem prevMenuItem;
+
+    SocketPlayer player;
+
+    public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
+    private static final String REDIRECT_URI = "https://www.google.com/";
+    public static final int REQUEST_CODE = 1337;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        FirebaseQueries.removeError();
 
-        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, loginFrag).commit();
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
+        builder.setScopes(new String[]{"user-read-private", "streaming"});
+        AuthenticationRequest request = builder.build();
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-        ViewPager pager = findViewById(R.id.view_pager);
-        pager.setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
+        //Initializing viewPager
+        viewPager = findViewById(R.id.view_pager);
+
+        //Initializing the bottomNavigationView
+        navigation = findViewById(R.id.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.search:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.play:
+                                viewPager.setCurrentItem(1);
+                                break;
+
+                            default:
+                        }
+                        return false;
+                    }
+                });
+
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (prevMenuItem != null) {
+                    prevMenuItem.setChecked(false);
+                } else {
+                    navigation.getMenu().getItem(0).setChecked(false);
+                }
+                Log.d("page", "onPageSelected: " + position);
+                navigation.getMenu().getItem(position).setChecked(true);
+                prevMenuItem = navigation.getMenu().getItem(position);
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+        FirebaseQueries.getActive("cal", new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                for (DocumentSnapshot document : task.getResult().getDocuments())
+                    Log.d("HERE", document.getId());
+            }
+        });
+        setupViewPager(viewPager);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        if (requestCode == LoginFragment.REQUEST_CODE) {
+        if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            player = new SpotifySocketPlayer(response, this, this);
+            gameFragment.setListener(player);
         }
 
     }
+
     @Override
     protected void onDestroy() {
         Spotify.destroyPlayer(this);
         super.onDestroy();
     }
 
-    private class MyPagerAdapter extends FragmentPagerAdapter {
+    private void setupViewPager(ViewPager viewPager) {
+        adapter = new cAdapter(getSupportFragmentManager());
+        if (gameFragment == null) gameFragment = new GameFragment();
+        if (searchFragment == null) searchFragment = new SearchableFragment();
+        if (profileFragment == null) profileFragment = new ProfileFragment();
 
-        private MyPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
+        createGame = new CreateGameFragment();
+        gameLanding = new GameLandingFragment();
 
-        @Override
-        public Fragment getItem(int pos) {
-            switch(pos) {
+        adapter.addFragment(searchFragment);
+        adapter.addFragment(gameLanding);
+        //adapter.addFragment(profileFragment);
+        viewPager.setAdapter(adapter);
 
-                //TODO: When the activity gets recreated (e.g. on orientation change) so do the ViewPager's fragments.
-                //TODO: Recycler view check... and scrolling
-               // case 0: return LoginFragment.newInstance("loginFragment, Instance 1");
-                case 0: return SearchableFragment.newInstance("browseFragment, instance1");
-                case 1: return GameFragment.newInstance("gameFragment, Instance 1");
-                case 2: return ProfileFragment.newInstance("profileFragment, Instance 1");
-                default: return GameFragment.newInstance("gameFragment, Instance 2");
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-// function for adding title to the page view
-//        @Override
-//        public CharSequence(int position){
-//            switch (position){
-//                case 0:
-//
-//            }
-//        }
     }
 
+    //Interfaces
+    public void onRandom() {
+    }
+
+    @Override
+    public void onPlayerResume() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void onPlay() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
+                adapter.replaceFragment(gameFragment,1);
+            }
+        });
+
+    }
+
+    @Override
+    public void onPlayerPause() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+    @Override
+    public void onReceiveId(final String id){
+        Log.d("ID IS,",id);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, id, Toast.LENGTH_SHORT).show();
+                ProfileFragment pf = ProfileFragment.newInstance(id);
+                //adapter.replaceFragment(pf,2);
+                adapter.addFragment(pf);
+                adapter.notifyDataSetChanged();
+                navigation = findViewById(R.id.bottom_navigation);
+                navigation.setOnNavigationItemSelectedListener(
+                        new BottomNavigationView.OnNavigationItemSelectedListener() {
+                            @Override
+                            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.search:
+                                        viewPager.setCurrentItem(0);
+                                        break;
+                                    case R.id.play:
+                                        viewPager.setCurrentItem(1);
+                                        break;
+                                    case R.id.profile:
+                                        viewPager.setCurrentItem(2);
+                                        break;
+
+                                    default:
+                                }
+                                return false;
+                            }
+                        });
+            }
+        });
+        //profileFragment.setUsername(id);
+
+    }
+    @Override
+    public void onInvite(final int gameId, final String creator) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
+                // Add the buttons
+                builder.setMessage("You've been invited to play a game");
+                builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                        Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
+                        player.acceptGame(gameId);
+                        dialog.cancel();
+                    }
+                });
+                builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
+                    }
+                });
+                // Create the AlertDialog
+                AlertDialog dialog = builder.create();
+//        dialog.getWindow().setGravity(Gravity.TOP);
+                dialog.show();
+            }
+        });
+
+    }
+    @Override
+    public void onResult(final String result){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    @Override
+    public void onScore(final int score){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, ""+score, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    @Override
+    public void onFinalScore(final int score, final boolean won){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, "Final Score: "+score, Toast.LENGTH_SHORT).show();
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                if(won)
+                    Toast.makeText(MainActivity.this, "You won", Toast.LENGTH_SHORT).show();
+                else
+                    Toast.makeText(MainActivity.this, "You lost", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    public void onCreate() {
+        adapter.replaceFragment(createGame, 1);
+
+    }
+
+    public void createGame(JSONArray invitees) {
+        Toast.makeText(this, "creating game", Toast.LENGTH_SHORT).show();
+        player.initiateGame(invitees);
+    }
+    private class cAdapter extends FragmentStatePagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+
+
+        public cAdapter(FragmentManager fm){
+            super(fm);
+        }
+        public Fragment getItem(int i){
+            return mFragmentList.get(i);
+        }
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+        @Override
+        public int getItemPosition(Object object) {
+            // Causes adapter to reload all Fragments when
+            // notifyDataSetChanged is called
+            return POSITION_NONE;
+        }
+        private void addFragment(Fragment fragment) {
+            mFragmentList.add(fragment);
+        }
+        public void replaceFragment(Fragment fragment, int index) {
+            //fm.beginTransaction().replace(mFragmentList.get((index)),fragment).commit();
+            mFragmentList.remove(index);
+            mFragmentList.add(index, fragment);
+            notifyDataSetChanged();
+        }
+    }
 }
