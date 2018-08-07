@@ -69,8 +69,6 @@ public class ProfileFragment extends Fragment  {
         return pFrag;
     }
 
-
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,12 +90,6 @@ public class ProfileFragment extends Fragment  {
             username = getArguments().getString("username");
             Name.setText(username);
         }
-        /*if (user != null) {
-            //username = user.getDisplayName();
-            //Name.setText(user.getDisplayName());
-            Name.setText(username);
-            //username = FirebaseQueries.getCurrentUser();
-        }*/
         return view;
     }
 
@@ -136,7 +128,6 @@ public class ProfileFragment extends Fragment  {
                         String url = document.get("profileurl").toString();
                         GlideApp.with(getContext())
                                 .load(url)
-                                //.load(task.getResult().getDocuments().get(0).get("profileurl"))
                                 .into(Profile);
                     } else {
                         Log.d(TAG, "No such document");
@@ -146,16 +137,6 @@ public class ProfileFragment extends Fragment  {
                 }
             }
         });
-
-        /*FirebaseQueries.queryUserName("username", new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                GlideApp.with(getContext())
-                        .load("profileurl")
-                        //.load(task.getResult().getDocuments().get(0).get("profileurl"))
-                        .into(Profile);
-            }
-        });*/
 
     }
 
@@ -214,16 +195,6 @@ public class ProfileFragment extends Fragment  {
             });
         }
     }
-
-//    @Override
-//    public void onAttach(Context context) {
-//        super.onAttach(context);
-//        if (context instanceof ProfileFragment.ProfileInterface) {
-//            listener = (ProfileInterface) context;
-//        } else {
-//            throw new ClassCastException(context.toString() + " must implement MyListFragment.OnItemSelectedListener");
-//        }
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
