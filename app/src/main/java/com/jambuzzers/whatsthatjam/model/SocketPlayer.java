@@ -7,7 +7,7 @@ public interface SocketPlayer  {
     void answer(String answer);
     void initiateGame(JSONArray invitees);
     void acceptGame(int gameId);
-//TODO: Move onDestroy
+    //TODO: Move onDestroy
     interface SocketPlayerListener {
         void onPlayerResume();
         void onPlay();

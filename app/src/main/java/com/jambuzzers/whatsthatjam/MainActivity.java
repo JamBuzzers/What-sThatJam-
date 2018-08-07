@@ -81,9 +81,6 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
                             case R.id.play:
                                 viewPager.setCurrentItem(1);
                                 break;
-                            case R.id.profile:
-                                viewPager.setCurrentItem(2);
-                                break;
 
                             default:
                         }
@@ -153,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
         adapter.addFragment(searchFragment);
         adapter.addFragment(gameLanding);
-        adapter.addFragment(profileFragment);
+        //adapter.addFragment(profileFragment);
         viewPager.setAdapter(adapter);
 
     }
@@ -202,8 +199,35 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, id, Toast.LENGTH_SHORT).show();
+                ProfileFragment pf = ProfileFragment.newInstance(id);
+                //adapter.replaceFragment(pf,2);
+                adapter.addFragment(pf);
+                adapter.notifyDataSetChanged();
+                navigation = findViewById(R.id.bottom_navigation);
+                navigation.setOnNavigationItemSelectedListener(
+                        new BottomNavigationView.OnNavigationItemSelectedListener() {
+                            @Override
+                            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                                switch (item.getItemId()) {
+                                    case R.id.search:
+                                        viewPager.setCurrentItem(0);
+                                        break;
+                                    case R.id.play:
+                                        viewPager.setCurrentItem(1);
+                                        break;
+                                    case R.id.profile:
+                                        viewPager.setCurrentItem(2);
+                                        break;
+
+                                    default:
+                                }
+                                return false;
+                            }
+                        });
             }
         });
+        //profileFragment.setUsername(id);
+
     }
     @Override
     public void onInvite(final int gameId, final String creator) {
@@ -211,29 +235,28 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
-                        // Add the buttons
-                        builder.setMessage("You've been invited to play a game by "+creator);
-                        builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User clicked OK button
-                                Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
-                                player.acceptGame(gameId);
-                                dialog.cancel();
-                            }
-                        });
-                        builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog, int id) {
-                                // User cancelled the dialog
-                                Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
-                                dialog.cancel();
-                            }
-                        });
-                        // Create the AlertDialog
-                        AlertDialog dialog = builder.create();
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
+                // Add the buttons
+                builder.setMessage("You've been invited to play a game");
+                builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                        Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
+                        player.acceptGame(gameId);
+                        dialog.cancel();
+                    }
+                });
+                builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
+                    }
+                });
+                // Create the AlertDialog
+                AlertDialog dialog = builder.create();
 //        dialog.getWindow().setGravity(Gravity.TOP);
-                        dialog.show();
-
+                dialog.show();
             }
         });
 
@@ -271,10 +294,6 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
                     Toast.makeText(MainActivity.this, "You won", Toast.LENGTH_SHORT).show();
                 else
                     Toast.makeText(MainActivity.this, "You lost", Toast.LENGTH_SHORT).show();
-
-
-
-
             }
         });
     }
@@ -318,4 +337,3 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         }
     }
 }
-
