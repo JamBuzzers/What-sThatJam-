@@ -15,6 +15,7 @@ import com.spotify.sdk.android.player.SpotifyPlayer;
 import org.json.JSONArray;
 
 import java.net.URISyntaxException;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class SpotifySocketPlayer implements SocketPlayer {
 
@@ -23,8 +24,12 @@ public class SpotifySocketPlayer implements SocketPlayer {
     private Socket mSocket;
     private SocketPlayerListener listener;
     private String token;
+    private String LOCK = "LOCK=";
+    ReentrantLock lock = new ReentrantLock();
 
     public SpotifySocketPlayer(AuthenticationResponse response, Context context, SocketPlayerListener l){
+        lock.lock();
+        Log.d(LOCK,"lock 1");
         if (response.getType() == AuthenticationResponse.Type.TOKEN) {
             Log.d("TOKEN",response.getAccessToken());
             token = response.getAccessToken();
@@ -33,6 +38,9 @@ public class SpotifySocketPlayer implements SocketPlayer {
                 @Override
                 public void onInitialized(SpotifyPlayer spotifyPlayer) {
                     spotifyplayer = spotifyPlayer;
+                    lock.unlock();
+                    Log.d(LOCK,"unlock 1");
+
                 }
                 @Override
                 public void onError(Throwable throwable) {
@@ -51,7 +59,13 @@ public class SpotifySocketPlayer implements SocketPlayer {
         }
         mSocket.connect();
         startSocketListening();
+        lock.lock();
+        Log.d(LOCK,"lock 2");
+
         login();
+        lock.unlock();
+        Log.d(LOCK,"unlock 2");
+
     }
 
     public void pause(){
