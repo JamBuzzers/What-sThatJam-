@@ -160,5 +160,13 @@ public class SpotifySocketPlayer implements SocketPlayer {
                 listener.onTimer(time);
             }
         });
+        mSocket.on("next round", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONArray names = (JSONArray) args[0];
+                JSONArray scores = (JSONArray) args[1];
+
+            }
+        });
     }
 }

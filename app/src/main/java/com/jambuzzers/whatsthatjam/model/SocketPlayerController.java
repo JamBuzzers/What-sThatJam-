@@ -3,10 +3,13 @@ package com.jambuzzers.whatsthatjam.model;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.jambuzzers.whatsthatjam.MainActivity;
 import com.jambuzzers.whatsthatjam.R;
+
+import java.util.ArrayList;
 
 public class SocketPlayerController implements SocketPlayer.SocketPlayerListener {
 
@@ -127,5 +130,9 @@ public class SocketPlayerController implements SocketPlayer.SocketPlayerListener
     @Override
     public void onTimer(int time){
         activity.gameFragment.setTime(time);
+    }
+    @Override
+    public void onNextRound(ArrayList<Pair<String,String>> standing){
+
     }
 }
