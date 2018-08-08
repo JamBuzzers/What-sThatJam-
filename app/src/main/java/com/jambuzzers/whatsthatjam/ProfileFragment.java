@@ -104,10 +104,12 @@ public class ProfileFragment extends Fragment  {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                        String url = document.get("profileurl").toString();
-                        GlideApp.with(getContext())
-                                .load(url)
-                                .into(Profile);
+                        if(document.get("profileurl") != null) {
+                            String url = document.get("profileurl").toString();
+                            GlideApp.with(getContext())
+                                    .load(url)
+                                    .into(Profile);
+                        }
                     } else {
                         Log.d(TAG, "No such document");
                     }

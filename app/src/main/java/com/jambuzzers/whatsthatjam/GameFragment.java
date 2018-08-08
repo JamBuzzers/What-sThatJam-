@@ -65,33 +65,17 @@ public class GameFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
         GlideApp.with(getContext())
                 .load("https://i.scdn.co/image/be0a1502eef1b896e63fd10d9bb6dcf8aa8b007b")
                 .into(ivAlbum);
-        /*etSong.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                boolean handled = false;
-                if(i == EditorInfo.IME_ACTION_DONE){
-                    // socketPlayer.onPlayerPause();
-                    //etSongGuess.setEnabled(false);
-                    String songGuess = textView.getText().toString();
-                    mSocketPlayer.answer(songGuess);
-                    stopBtn.setEnabled(true);
-                    etSongGuess.setEnabled(false);
-                }
-                return handled;
-            }
-        });
-       */
+
     }
     public void setTime(int time){
         tvTime.setText(Integer.toString(time));
     }
-    public void nextRound(int n){
 
-    }
+
+
     public void setListener(SocketPlayer listener) {
         mSocketPlayer = listener;
     }
