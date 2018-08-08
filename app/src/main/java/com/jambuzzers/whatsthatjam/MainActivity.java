@@ -3,6 +3,7 @@
 // Copyright (c) 2017 Spotify. All rights reserved.
 package com.jambuzzers.whatsthatjam;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -76,9 +78,6 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
                             case R.id.play:
                                 viewPager.setCurrentItem(1);
                                 break;
-                            case R.id.profile:
-                                viewPager.setCurrentItem(2);
-                                break;
 
                             default:
                         }
@@ -141,13 +140,13 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
 
         adapter.addFragment(searchFragment);
         adapter.addFragment(gameLanding);
-        adapter.addFragment(profileFragment);
+        //adapter.addFragment(profileFragment);
         viewPager.setAdapter(adapter);
 
     }
     //Public Methods
-    public void startGame(){
-        adapter.replaceFragment(gameFragment,1);
+    public void startGame() {
+        adapter.replaceFragment(gameFragment, 1);
     }
     public void acceptGame(int gameId){
         player.acceptGame(gameId);
@@ -194,4 +193,3 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         }
     }
 }
-
