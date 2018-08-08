@@ -143,8 +143,12 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
 
     }
     //Public Methods
+    private boolean start = false;
     public void startGame() {
-        adapter.replaceFragment(gameFragment, 1);
+        if(!start){
+            adapter.replaceFragment(gameFragment, 1);
+            start = !start;
+        }
     }
     public void acceptGame(int gameId){
         player.acceptGame(gameId);
