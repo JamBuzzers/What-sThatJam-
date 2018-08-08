@@ -17,5 +17,6 @@ public interface SocketPlayer  {
         void onResult(String result);
         void onScore(int score);
         void onFinalScore(int score, boolean won);
+        void onTimer(int time);
     }
 }

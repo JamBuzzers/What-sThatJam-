@@ -65,7 +65,9 @@ public class GameFragment extends Fragment {
         });
        */
     }
-
+    public void setTime(int time){
+        tvTime.setText(Integer.toString(time));
+    }
     public void setListener(SocketPlayer listener) {
         mSocketPlayer = listener;
     }

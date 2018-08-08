@@ -123,4 +123,8 @@ public class SocketPlayerController implements SocketPlayer.SocketPlayerListener
             }
         });
     }
+    @Override
+    public void onTimer(int time){
+        activity.gameFragment.setTime(time);
+    }
 }

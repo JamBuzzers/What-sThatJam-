@@ -153,6 +153,13 @@ public class SpotifySocketPlayer implements SocketPlayer {
                 listener.onFinalScore(score,won);
             }
         });
+        mSocket.on("timer", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                int time = (int) args[0];
+                listener.onTimer(time);
+            }
+        });
     }
 }
 

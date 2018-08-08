@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     cAdapter adapter;
     //define fragments
     SearchableFragment searchFragment;
-    GameFragment gameFragment;
+    public GameFragment gameFragment;
     ProfileFragment profileFragment;
     GameLandingFragment gameLanding;
     CreateGameFragment createGame;
