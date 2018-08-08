@@ -101,7 +101,7 @@
         android:orientation="horizontal"></LinearLayout>
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/ivAlbum"
         android:layout_width="203dp"
         android:layout_height="261dp"
         android:src="@drawable/defaultimage"
@@ -109,19 +109,18 @@
 
 
     <EditText
-        android:id="@+id/etGuess"
+        android:id="@+id/etSongTitle"
         android:layout_width="271dp"
         android:layout_height="64dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:enabled="false"
         android:inputType="text" />
 
     <ImageView
-        android:id="@+id/imageView3"
+        android:id="@+id/ivStop"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="55dp"
         android:src="@android:drawable/ic_media_pause" />
 
 
