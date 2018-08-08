@@ -14,6 +14,6 @@ public class User {
             username = (String)document.getData().get("name");
         else
             username = document.getId();
-        id = (String)document.getId();
+        id = document.getId();
     }
 }
