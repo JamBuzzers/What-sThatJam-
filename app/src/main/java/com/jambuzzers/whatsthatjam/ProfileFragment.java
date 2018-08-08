@@ -21,8 +21,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -31,7 +29,6 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
-import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.UUID;
 
@@ -61,30 +58,19 @@ public class ProfileFragment extends Fragment  {
     StorageReference storageReference;
     DatabaseReference Ref;
 
-    User user;
 
-    public static ProfileFragment newProfFrag(User u){
-        ProfileFragment pFrag = new ProfileFragment();
-        pFrag.user = u;
-        return pFrag;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
-    ProfileInterface listener;
-    public interface ProfileInterface {
-        //void onChangeImage();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
         ButterKnife.bind(this,view);
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(getArguments() != null)
         {
             username = getArguments().getString("username");
@@ -106,13 +92,6 @@ public class ProfileFragment extends Fragment  {
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
-
-        Logout_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //do something
-            }
-        });
 
 
         Ref = FirebaseDatabase.getInstance().getReference().child("users");

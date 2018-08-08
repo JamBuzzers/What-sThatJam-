@@ -3,7 +3,6 @@
 // Copyright (c) 2017 Spotify. All rights reserved.
 package com.jambuzzers.whatsthatjam;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -150,6 +148,32 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     }
     public void acceptGame(int gameId){
         player.acceptGame(gameId);
+    }
+    public void setUpProfile(String id){
+        ProfileFragment pf = ProfileFragment.newInstance(id);
+        //adapter.replaceFragment(pf,2);
+        adapter.addFragment(pf);
+        adapter.notifyDataSetChanged();
+        navigation = findViewById(R.id.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.search:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.play:
+                                viewPager.setCurrentItem(1);
+                                break;
+                            case R.id.profile:
+                                viewPager.setCurrentItem(2);
+                                break;
+                            default:
+                        }
+                        return false;
+                    }
+                });
     }
     //Interfaces
     public void onRandom() {

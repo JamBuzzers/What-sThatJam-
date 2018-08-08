@@ -54,6 +54,7 @@ public class SocketPlayerController implements SocketPlayer.SocketPlayerListener
             @Override
             public void run() {
                 Toast.makeText(activity, id, Toast.LENGTH_SHORT).show();
+                activity.setUpProfile(id);
             }
         });
     }
