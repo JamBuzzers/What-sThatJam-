@@ -1,17 +1,17 @@
 package com.jambuzzers.whatsthatjam;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
@@ -28,58 +28,53 @@ public class GameFragment extends Fragment {
     private SocketPlayer mSocketPlayer; //check for null pointers
 
 
-    @BindView(R.id.guess_btn) Button stopBtn;
-    @BindView(R.id.etGuess) EditText etSongGuess;
-    @BindView(R.id.tv_timer) TextView tvTimer;
+    @BindView(R.id.etSongTitle) EditText etSong;
+    @BindView(R.id.tvRound) TextView tvRound;
+    @BindView(R.id.tvTime) TextView tvTime;
+    @BindView(R.id.tvScore) TextView tvScore;
+    @BindView(R.id.ivStop) ImageView ivStop;
+    @BindView(R.id.ivAlbum) ImageView ivAlbum;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_game, container, false);
         ButterKnife.bind(this,view);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+        ivStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mSocketPlayer.pause();
+                etSong.requestFocus();
+            }
+        });
+        etSong.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(i == EditorInfo.IME_ACTION_DONE){
+                    String songGuess = textView.getText().toString();
+                    mSocketPlayer.answer(songGuess);
+                }
+                return false;
+            }
+        });
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        stopBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mSocketPlayer.pause();
-                initGuessAccess();
-            }
-        });
-        etSongGuess.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                boolean handled = false;
-                if(i == EditorInfo.IME_ACTION_DONE){
-                    // socketPlayer.onPlayerPause();
-                    String songGuess = textView.getText().toString();
-                    mSocketPlayer.answer(songGuess);
-                    stopBtn.setEnabled(true);
-                    etSongGuess.setEnabled(false);
-                    etSongGuess.getText().clear();
+        GlideApp.with(getContext())
+                .load("https://i.scdn.co/image/be0a1502eef1b896e63fd10d9bb6dcf8aa8b007b")
+                .into(ivAlbum);
 
-                }
-                return handled;
-            }
-        });
     }
-    public void initGuessAccess() {
-        stopBtn.setEnabled(false);
-        etSongGuess.setEnabled(true);
+    public void setTime(int time){
+        tvTime.setText(Integer.toString(time));
     }
 
-    public static GameFragment newInstance(String text) {
-        GameFragment frag = new GameFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-        frag.setArguments(b);
 
-        return frag;
-    }
 
     public void setListener(SocketPlayer listener) {
         mSocketPlayer = listener;
