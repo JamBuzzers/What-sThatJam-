@@ -43,18 +43,6 @@ public class GameFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        new CountDownTimer(150000000, 1000) {
-
-            public void onTick(long millisUntilFinished) {
-                tvTimer.setText("seconds remaining: " + millisUntilFinished / 1000);
-            }
-
-            public void onFinish() {
-                tvTimer.setText("Time is up!");
-                timesUp();
-            }
-        }.start();
-
         stopBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -68,11 +56,12 @@ public class GameFragment extends Fragment {
                 boolean handled = false;
                 if(i == EditorInfo.IME_ACTION_DONE){
                     // socketPlayer.onPlayerPause();
-                    //etSongGuess.setEnabled(false);
                     String songGuess = textView.getText().toString();
                     mSocketPlayer.answer(songGuess);
                     stopBtn.setEnabled(true);
                     etSongGuess.setEnabled(false);
+                    etSongGuess.getText().clear();
+
                 }
                 return handled;
             }
@@ -81,10 +70,6 @@ public class GameFragment extends Fragment {
     public void initGuessAccess() {
         stopBtn.setEnabled(false);
         etSongGuess.setEnabled(true);
-    }
-    public void timesUp(){
-        stopBtn.setEnabled(false);
-        etSongGuess.setEnabled(false);
     }
 
     public static GameFragment newInstance(String text) {
