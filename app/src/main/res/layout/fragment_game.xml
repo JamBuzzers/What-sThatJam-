@@ -136,13 +136,29 @@
 
     </LinearLayout>
 
-
-    <ImageView
-        android:id="@+id/ivAlbum"
-        android:layout_width="203dp"
-        android:layout_height="209dp"
+    <FrameLayout
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_gravity="center"
-        android:src="@drawable/defaultimage" />
+        >
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="1dp"
+            android:fontFamily="sans-serif"
+            android:text="This is Info"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+        <ImageView
+            android:id="@+id/ivAlbum"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/black"
+            />
+    </FrameLayout>
+
 
 
     <EditText
@@ -152,13 +168,16 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:inputType="text" />
+        android:inputType="text"
+        android:gravity="center"/>
 
     <ImageView
         android:id="@+id/ivStop"
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:src="@android:drawable/ic_media_pause" />
+
+
 
 
 </LinearLayout>
