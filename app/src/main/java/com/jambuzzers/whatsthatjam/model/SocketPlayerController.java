@@ -36,6 +36,7 @@ public class SocketPlayerController implements SocketPlayer.SocketPlayerListener
             public void run() {
                 Toast.makeText(activity, "Played", Toast.LENGTH_SHORT).show();
                 activity.startGame();
+                activity.gameFragment.enableText();
             }
         });
     }
@@ -106,6 +107,7 @@ public class SocketPlayerController implements SocketPlayer.SocketPlayerListener
             @Override
             public void run() {
                 Toast.makeText(activity, ""+score, Toast.LENGTH_SHORT).show();
+                activity.gameFragment.setScore(score);
             }
         });
     }
