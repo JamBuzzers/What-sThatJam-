@@ -1,6 +1,7 @@
 package com.jambuzzers.whatsthatjam.model;
 
 import android.content.Context;
+import android.util.Pair;
 import android.util.Log;
 
 import com.github.nkzawa.emitter.Emitter;
@@ -13,8 +14,10 @@ import com.spotify.sdk.android.player.Spotify;
 import com.spotify.sdk.android.player.SpotifyPlayer;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 
 public class SpotifySocketPlayer implements SocketPlayer {
 
@@ -123,8 +126,12 @@ public class SpotifySocketPlayer implements SocketPlayer {
         mSocket.on("id", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                String id  = (String) args[0];
-                listener.onReceiveId(id);
+                String name  = (String) args[1]);
+
+                String id = (String ) args[0];
+                if(name == null)
+                    name =id;
+                listener.onReceiveId(name,id);
             }
         });
         mSocket.on("result", new Emitter.Listener() {
@@ -165,8 +172,21 @@ public class SpotifySocketPlayer implements SocketPlayer {
             public void call(Object... args) {
                 JSONArray names = (JSONArray) args[0];
                 JSONArray scores = (JSONArray) args[1];
+                ArrayList<Pair<String,String>> pairs = new ArrayList<>();
+                for(int i = 0; i <names.length();i++) {
+                    try {
+                        pairs.add(new Pair<String,String>(names.getString(i),scores.getString(i)));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                String name = (String) args[2];
+                String image = (String) args[3];
+                Boolean timeout = (Boolean) args[4];
+                listener.onNextRound(pairs,name,image,timeout);
 
             }
         });
+
     }
 }
