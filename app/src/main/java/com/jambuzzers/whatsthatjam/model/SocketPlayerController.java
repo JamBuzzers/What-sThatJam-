@@ -52,12 +52,12 @@ public class SocketPlayerController implements SocketPlayer.SocketPlayerListener
 
     }
     @Override
-    public void onReceiveId(final String id){
+    public void onReceiveId(final String name, final String id){
         Log.d("ID IS,",id);
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity, id, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, name, Toast.LENGTH_SHORT).show();
                 activity.setUpProfile(id);
             }
         });
@@ -134,7 +134,13 @@ public class SocketPlayerController implements SocketPlayer.SocketPlayerListener
         activity.gameFragment.setTime(time);
     }
     @Override
-    public void onNextRound(ArrayList<Pair<String,String>> standing){
-
+    public void onNextRound(ArrayList<Pair<String,String>> standing, final String title, final String image, Boolean timeout){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                activity.gameFragment.nextRound(title,image);
+            }
+        });
     }
+
 }
