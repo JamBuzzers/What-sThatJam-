@@ -14,11 +14,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
 
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
-import com.jambuzzers.whatsthatjam.model.SocketPlayerController;
 import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
@@ -55,6 +54,14 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FirebaseQueries.removeError();
+
+
+        if (gameFragment == null) gameFragment = GameFragment.newInstance(this);
+        if (searchFragment == null) searchFragment = new SearchableFragment();
+        if (profileFragment == null) profileFragment = new ProfileFragment();
+        adapter = new cAdapter(getSupportFragmentManager());
+        createGame = new CreateGameFragment();
+        gameLanding = new GameLandingFragment();
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
@@ -116,7 +123,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            player = new SpotifySocketPlayer(response, this, new SocketPlayerController(this));
+            player = new SpotifySocketPlayer(response, this, gameFragment);
             gameFragment.setListener(player);
         }
 
@@ -129,27 +136,13 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        adapter = new cAdapter(getSupportFragmentManager());
-        if (gameFragment == null) gameFragment = new GameFragment();
-        if (searchFragment == null) searchFragment = new SearchableFragment();
-        if (profileFragment == null) profileFragment = new ProfileFragment();
-
-        createGame = new CreateGameFragment();
-        gameLanding = new GameLandingFragment();
-
         adapter.addFragment(searchFragment);
         adapter.addFragment(gameLanding);
-        //adapter.addFragment(profileFragment);
         viewPager.setAdapter(adapter);
-
     }
     //Public Methods
-    private boolean start = false;
     public void startGame() {
-        if(!start){
             adapter.replaceFragment(gameFragment, 1);
-            start = !start;
-        }
     }
     public void acceptGame(int gameId){
         player.acceptGame(gameId);
@@ -182,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
                 });
     }
     //Interfaces
+    @Override
     public void onRandom() {
         JSONArray inviteMe = new JSONArray();
         while(id == null){
@@ -194,12 +188,13 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         inviteMe.put(id);
         player.initiateGame(inviteMe);
     }
+    @Override
     public void onCreate() {
+        navigation.setVisibility(View.GONE);
         adapter.replaceFragment(createGame, 1);
-
     }
+    @Override
     public void createGame(JSONArray invitees) {
-        Toast.makeText(this, "creating game", Toast.LENGTH_SHORT).show();
         player.initiateGame(invitees);
     }
     public class cAdapter extends FragmentStatePagerAdapter {
@@ -218,15 +213,12 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         }
         @Override
         public int getItemPosition(Object object) {
-            // Causes adapter to reload all Fragments when
-            // notifyDataSetChanged is called
             return POSITION_NONE;
         }
         private void addFragment(Fragment fragment) {
             mFragmentList.add(fragment);
         }
         public void replaceFragment(Fragment fragment, int index) {
-            //fm.beginTransaction().replace(mFragmentList.get((index)),fragment).commit();
             mFragmentList.remove(index);
             mFragmentList.add(index, fragment);
             notifyDataSetChanged();

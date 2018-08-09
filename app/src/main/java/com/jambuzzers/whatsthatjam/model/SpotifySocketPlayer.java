@@ -126,7 +126,7 @@ public class SpotifySocketPlayer implements SocketPlayer {
         mSocket.on("id", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                String name  = (String) args[1]);
+                String name  = (String) args[1];
 
                 String id = (String ) args[0];
                 if(name == null)
