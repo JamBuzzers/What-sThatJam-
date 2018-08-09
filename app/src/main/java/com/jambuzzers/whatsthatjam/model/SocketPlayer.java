@@ -17,11 +17,11 @@ public interface SocketPlayer  {
         void onPlay();
         void onPlayerPause();
         void onInvite(int gameId, String creator);
-        void onReceiveId(String id);
+        void onReceiveId(String name, String id);
         void onResult(String result);
         void onScore(int score);
         void onFinalScore(int score, boolean won);
         void onTimer(int time);
-        void onNextRound(ArrayList<Pair<String, String>> standings);
+        void onNextRound(ArrayList<Pair<String, String>> standings, String title, String image, Boolean timeout);
     }
 }

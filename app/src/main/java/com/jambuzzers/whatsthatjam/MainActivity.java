@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     MenuItem prevMenuItem;
 
     SocketPlayer player;
+    String id =null;
 
     public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         player.acceptGame(gameId);
     }
     public void setUpProfile(String id){
+        this.id = id;
         ProfileFragment pf = ProfileFragment.newInstance(id);
         //adapter.replaceFragment(pf,2);
         adapter.addFragment(pf);
@@ -181,6 +183,16 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     }
     //Interfaces
     public void onRandom() {
+        JSONArray inviteMe = new JSONArray();
+        while(id == null){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        inviteMe.put(id);
+        player.initiateGame(inviteMe);
     }
     public void onCreate() {
         adapter.replaceFragment(createGame, 1);
