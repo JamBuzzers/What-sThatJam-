@@ -6,17 +6,24 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.User;
 
@@ -127,6 +134,11 @@ public class CreateGameFragment extends Fragment {
 
         ArrayList<User> users;
         ArrayList<User> invitees;
+        Context context;
+
+        FirebaseStorage storage;
+        StorageReference storageReference;
+        DatabaseReference Ref;
 
         public CreateGameAdapter(ArrayList<User> u, ArrayList<User> inv) {
             invitees = inv;
@@ -135,7 +147,7 @@ public class CreateGameFragment extends Fragment {
 
         @Override
         public CreateGameAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            Context context = viewGroup.getContext();
+            context = viewGroup.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
             View searchView = inflater.inflate(R.layout.item_search, viewGroup, false);
 
@@ -144,13 +156,53 @@ public class CreateGameFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull CreateGameAdapter.ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull final CreateGameAdapter.ViewHolder holder, final int position) {
             holder.name.setText(users.get(position).username);
+
+            storage = FirebaseStorage.getInstance();
+            storageReference = storage.getReference();
+
+            Ref = FirebaseDatabase.getInstance().getReference().child("users");
+            FirebaseQueries.userById(users.get(position).id, new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    String TAG = "BY ID";
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+
+                            if (document.get("profileurl") != null) {
+                                String url = document.get("profileurl").toString();
+
+                                if (!url.equals("")) {
+                                    GlideApp.with(context)
+                                            .load(url)
+                                            .centerCrop()
+                                            .transform(new RoundedCorners(100))
+                                            .circleCrop()
+                                            .into(holder.profPic);
+                                }
+                            }
+//                            if (document.get("active") == true) {
+//                                holder.activeGreen.setVisibility(View.VISIBLE);
+//                            }
+                        } else {
+                            Log.d(TAG, "No such document");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                }
+            });
+
             holder.name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     invitees.add(users.get(position));
                     Toast.makeText(getContext(),"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
+
                 }
             });
         }
@@ -163,6 +215,10 @@ public class CreateGameFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.tvName)
             TextView name;
+
+            @BindView(R.id.ivSearchProfPic)
+            ImageView profPic;
+
 
             public ViewHolder(View itemView) {
                 super(itemView);

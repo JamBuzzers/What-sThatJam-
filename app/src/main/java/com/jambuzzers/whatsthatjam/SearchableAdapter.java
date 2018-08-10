@@ -23,6 +23,7 @@ import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -31,7 +32,6 @@ import butterknife.ButterKnife;
 public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.ViewHolder> {
 
     ArrayList<User> users;
-    ArrayList<User> activeUsers;
 
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -39,7 +39,9 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
 
     Context context;
 
-    public  SearchableAdapter(ArrayList<User> u){ users=u; }
+    public SearchableAdapter(ArrayList<User> u) {
+        users = u;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
@@ -53,24 +55,11 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+
         holder.name.setText(users.get(position).username);
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-
-
-//        FirebaseQueries.getActive(users.get(position).id,new OnCompleteListener<QuerySnapshot>() {
-//            @Override
-//            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-//                if(task.isSuccessful()) {
-//                    for (DocumentSnapshot document : task.getResult().getDocuments())
-//                        activeUsers.add(new User(document));
-//                    notifyDataSetChanged();
-//                    activeUsers.get(position).id
-//                }
-//            }
-//        });
-
 
         Ref = FirebaseDatabase.getInstance().getReference().child("users");
         FirebaseQueries.userById(users.get(position).id, new OnCompleteListener<DocumentSnapshot>() {
@@ -83,10 +72,10 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
                     if (document.exists()) {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
 
-                        if(document.get("profileurl") != null) {
+                        if (document.get("profileurl") != null) {
                             String url = document.get("profileurl").toString();
 
-                            if(!url.equals("")){
+                            if (!url.equals("")) {
                                 GlideApp.with(context)
                                         .load(url)
                                         .centerCrop()
@@ -95,6 +84,9 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
                                         .into(holder.profPic);
                             }
                         }
+//                            if (document.get("active") == true) {
+//                                holder.activeGreen.setVisibility(View.VISIBLE);
+//                            }
                     } else {
                         Log.d(TAG, "No such document");
                     }
@@ -103,9 +95,8 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
                 }
             }
         });
-
-
     }
+
 
     @Override
     public int getItemCount() {
