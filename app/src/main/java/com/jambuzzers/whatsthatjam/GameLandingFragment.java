@@ -16,7 +16,8 @@ public class GameLandingFragment extends Fragment {
 
     @BindView(R.id.btRandom)
     Button btRandom;
-    @BindView(R.id.btCreate) Button btCreate;
+    @BindView(R.id.btCreate)
+    Button btCreate;
 
     private GameLandingListener mListener;
 

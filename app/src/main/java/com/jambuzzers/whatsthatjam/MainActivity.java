@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -35,13 +36,16 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity implements SocketPlayer.SocketPlayerListener,GameLandingFragment.GameLandingListener,CreateGameFragment.CreateGameListener {
 
-    private BottomNavigationView navigation;
+    @BindView(R.id.bottom_navigation) BottomNavigationView navigation;
     private ViewPager viewPager;
     cAdapter adapter;
     //define fragments
+    SplashFragment splashFragment;
     SearchableFragment searchFragment;
     GameFragment gameFragment;
     ProfileFragment profileFragment;
@@ -51,14 +55,25 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
     SocketPlayer player;
 
+
     public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
     public static final int REQUEST_CODE = 1337;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
         FirebaseQueries.removeError();
+
+        //FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
+        //fts.replace(R.id.placeholder, new SplashFragment());
+        //fts.commit();
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
@@ -69,7 +84,6 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         viewPager = findViewById(R.id.view_pager);
 
         //Initializing the bottomNavigationView
-        navigation = findViewById(R.id.bottom_navigation);
         navigation.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -130,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
             player = new SpotifySocketPlayer(response, this, this);
             gameFragment.setListener(player);
         }
-
     }
 
     @Override
@@ -205,30 +218,29 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
                 adapter.notifyDataSetChanged();
                 navigation = findViewById(R.id.bottom_navigation);
                 navigation.setOnNavigationItemSelectedListener(
-                        new BottomNavigationView.OnNavigationItemSelectedListener() {
-                            @Override
-                            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                                switch (item.getItemId()) {
-                                    case R.id.search:
-                                        viewPager.setCurrentItem(0);
-                                        break;
-                                    case R.id.play:
-                                        viewPager.setCurrentItem(1);
-                                        break;
-                                    case R.id.profile:
-                                        viewPager.setCurrentItem(2);
-                                        break;
+                    new BottomNavigationView.OnNavigationItemSelectedListener() {
+                        @Override
+                        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                            switch (item.getItemId()) {
+                                case R.id.search:
+                                    viewPager.setCurrentItem(0);
+                                    break;
+                                case R.id.play:
+                                    viewPager.setCurrentItem(1);
+                                    break;
+                                case R.id.profile:
+                                    viewPager.setCurrentItem(2);
+                                    break;
 
-                                    default:
-                                }
-                                return false;
+                                default:
                             }
-                        });
+                            return false;
+                        }
+                    });
             }
         });
-        //profileFragment.setUsername(id);
-
     }
+
     @Override
     public void onInvite(final int gameId, final String creator) {
         runOnUiThread(new Runnable() {
