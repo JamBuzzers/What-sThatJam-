@@ -30,6 +30,7 @@ public class SearchableFragment extends Fragment {
     SearchableAdapter searchableAdapter;
     ArrayList<User> users;
 
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }

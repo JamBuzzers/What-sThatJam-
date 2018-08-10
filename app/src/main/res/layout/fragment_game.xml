@@ -148,7 +148,7 @@
             android:elevation="1dp"
             android:fontFamily="sans-serif"
             android:text="This is Info"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryTextColor"
             android:textSize="18sp"
             android:textStyle="bold" />
         <ImageView

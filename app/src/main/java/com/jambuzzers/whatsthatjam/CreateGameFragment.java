@@ -73,8 +73,11 @@ public class CreateGameFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String s) {
+                users.clear();
                 if(s.length() ==1 )
                 {
+                    allUsers.clear();
+
                     FirebaseQueries.getActive(s,new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -86,7 +89,6 @@ public class CreateGameFragment extends Fragment {
                     });
                 }
                 else{
-                    users.clear();
                     for(User u : allUsers){
                         if(u.username.startsWith(s))
                             users.add(u);
