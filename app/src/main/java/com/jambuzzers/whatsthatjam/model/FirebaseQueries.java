@@ -36,7 +36,7 @@ public class FirebaseQueries {
                 .addOnCompleteListener(onCompleteListener);
     }
     public static void queryAllUsernames(OnCompleteListener<QuerySnapshot> onCompleteListener){
-        database.collection("username")
+        database.collection("users")
                 .get()
                 .addOnCompleteListener(onCompleteListener);
     }

@@ -48,7 +48,6 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
             super(itemView);
             ButterKnife.bind(this, itemView);
         }
-
     }
 
 }

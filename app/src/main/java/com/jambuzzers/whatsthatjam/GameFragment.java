@@ -1,102 +1,264 @@
 package com.jambuzzers.whatsthatjam;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 
+import java.util.ArrayList;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
 
 /**
  * Handles all the game view. Checks the edit text and gets a track from the array 20 to play
  * Should handle when the song plays and stops the song
  */
-public class GameFragment extends Fragment {
+public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerListener{
 
     private SocketPlayer mSocketPlayer; //check for null pointers
 
 
-    @BindView(R.id.guess_btn) Button stopBtn;
-    @BindView(R.id.etGuess) EditText etSongGuess;
-    @BindView(R.id.tv_timer) TextView tvTimer;
+    @BindView(R.id.etSongTitle) EditText etSong;
+    @BindView(R.id.tvRound) TextView tvRound;
+    @BindView(R.id.tvTime) TextView tvTime;
+    @BindView(R.id.tvScore) TextView tvScore;
+    @BindView(R.id.ivStop) ImageView ivStop;
+    @BindView(R.id.ivAlbum) ImageView ivAlbum;
+    @BindView(R.id.tvInfo) TextView tvInfo;
+
+    private int round=1;
+    boolean visible = false;
+    MainActivity activity;
+    boolean buttonEnabled = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_game, container, false);
         ButterKnife.bind(this,view);
+        ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+        ivStop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!buttonEnabled)
+                    return;
+                mSocketPlayer.pause();
+                enableText();
+            }
+        });
+        etSong.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if(i == EditorInfo.IME_ACTION_DONE){
+                    String songGuess = textView.getText().toString();
+                    mSocketPlayer.answer(songGuess);
+                    InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(etSong.getWindowToken(), 0);
+                }
+                return false;
+            }
+        });
+        disableText();
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        new CountDownTimer(150000000, 1000) {
 
-            public void onTick(long millisUntilFinished) {
-                tvTimer.setText("seconds remaining: " + millisUntilFinished / 1000);
-            }
 
-            public void onFinish() {
-                tvTimer.setText("Time is up!");
-                timesUp();
-            }
-        }.start();
-
-        stopBtn.setOnClickListener(new View.OnClickListener() {
+    }
+    //Listeners
+    @Override
+    public void onPlayerResume() {
+        activity.runOnUiThread(new Runnable() {
             @Override
-            public void onClick(View view) {
-                mSocketPlayer.pause();
-                initGuessAccess();
+            public void run() {
+                enableButton();
             }
         });
-        etSongGuess.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+    }
+    @Override
+    public void onPlay() {
+        activity.runOnUiThread(new Runnable() {
             @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                boolean handled = false;
-                if(i == EditorInfo.IME_ACTION_DONE){
-                    // socketPlayer.onPlayerPause();
-                    //etSongGuess.setEnabled(false);
-                    String songGuess = textView.getText().toString();
-                    mSocketPlayer.answer(songGuess);
-                    stopBtn.setEnabled(true);
-                    etSongGuess.setEnabled(false);
+            public void run() {
+                if(!visible){
+                    activity.startGame();
+                    visible = true;
                 }
-                return handled;
+                disableText();
+                enableButton();
+                hide();
             }
         });
     }
-    public void initGuessAccess() {
-        stopBtn.setEnabled(false);
-        etSongGuess.setEnabled(true);
-    }
-    public void timesUp(){
-        stopBtn.setEnabled(false);
-        etSongGuess.setEnabled(false);
-    }
 
-    public static GameFragment newInstance(String text) {
-        GameFragment frag = new GameFragment();
-        Bundle b = new Bundle();
-        b.putString("msg", text);
-        frag.setArguments(b);
+    @Override
+    public void onPlayerPause() {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                disableButton();
+            }
+        });
 
-        return frag;
     }
+    @Override
+    public void onReceiveId(final String name, final String id){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(activity, name, Toast.LENGTH_SHORT).show();
+                activity.setUpProfile(id,name);
+            }
+        });
+    }
+    @Override
+    public void onInvite(final int gameId, final String creator) {
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.MyAlertDialogTheme);
+                builder.setMessage("You've been invited to play a game by "+creator);
+                builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        activity.acceptGame(gameId);
+                        dialog.cancel();
+                    }
+                });
+                builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                        Toast.makeText(activity, "You Declined game invite", Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
+                    }
+                });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+            }
+        });
+
+    }
+    @Override
+    public void onResult(final String result){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvInfo.setText(result);
+            }
+        });
+    }
+    @Override
+    public void onScore(final int score){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(tvScore == null)
+                    return;
+                etSong.setFocusable(false);
+                tvScore.setText(Integer.toString(score));
+                round++;
+                tvRound.setText(Integer.toString(round));
+            }
+        });
+    }
+    @Override
+    public void onFinalScore(final int score, final boolean won){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+            }
+        });
+    }
+    @Override
+    public void onTimer(int time){
+        if(null ==tvTime)
+            return;
+        tvTime.setText(Integer.toString(time));
+    }
+    @Override
+    public void onNextRound(ArrayList<Pair<String,String>> standing, final String title, final String image, final Boolean timeout){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(timeout)
+                    tvInfo.setText("Timeout");
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        reveal(title,image);
+                    }
+                }, 2000);
+            }
+        });
+    }
+    //Public Methods
 
     public void setListener(SocketPlayer listener) {
         mSocketPlayer = listener;
+    }
+    // UI
+    public void reveal(String title, String url){
+        tvInfo.setText("");
+        GlideApp.with(getContext())
+                .load(url)
+                .into(ivAlbum);
+        Animation aniSlide = AnimationUtils.loadAnimation(getContext(),R.anim.zoom_in);
+        ivAlbum.startAnimation(aniSlide);
+        etSong.setText(title);
+    }
+    public void hide(){
+        etSong.setText("");
+        GlideApp.with(getContext()).load("").into(ivAlbum);
+    }
+    public void disableButton(){
+        buttonEnabled = false;
+    }
+    public void enableButton(){
+        buttonEnabled = true;
+
+    }
+    public void disableText(){
+        etSong.setFocusable(false);
+    }
+    public void enableText(){
+        etSong.setClickable(true);
+        etSong.setFocusableInTouchMode(true);
+        etSong.setFocusable(true);
+        etSong.requestFocus();
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+    public static GameFragment newInstance(MainActivity act){
+        GameFragment gf = new GameFragment();
+        gf.activity = act;
+        return gf;
     }
 }

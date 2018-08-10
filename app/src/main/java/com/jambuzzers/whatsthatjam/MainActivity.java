@@ -3,9 +3,8 @@
 // Copyright (c) 2017 Spotify. All rights reserved.
 package com.jambuzzers.whatsthatjam;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -17,12 +16,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
@@ -36,30 +31,28 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity implements SocketPlayer.SocketPlayerListener,GameLandingFragment.GameLandingListener,CreateGameFragment.CreateGameListener {
+public class MainActivity extends AppCompatActivity implements GameLandingFragment.GameLandingListener,CreateGameFragment.CreateGameListener {
 
-    @BindView(R.id.bottom_navigation) BottomNavigationView navigation;
+    private BottomNavigationView navigation;
     private ViewPager viewPager;
     cAdapter adapter;
     //define fragments
     SplashFragment splashFragment;
     SearchableFragment searchFragment;
-    GameFragment gameFragment;
+    public GameFragment gameFragment;
     ProfileFragment profileFragment;
     GameLandingFragment gameLanding;
     CreateGameFragment createGame;
     MenuItem prevMenuItem;
 
     SocketPlayer player;
-
+    String id =null;
+    String name;
 
     public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
     public static final int REQUEST_CODE = 1337;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
@@ -67,13 +60,19 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         actionBar.hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
-
         FirebaseQueries.removeError();
 
         //FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
         //fts.replace(R.id.placeholder, new SplashFragment());
         //fts.commit();
+
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
+
+        if (gameFragment == null) gameFragment = GameFragment.newInstance(this);
+        if (searchFragment == null) searchFragment = new SearchableFragment();
+        adapter = new cAdapter(getSupportFragmentManager());
+        createGame = new CreateGameFragment();
+        gameLanding = new GameLandingFragment();
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
@@ -84,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         viewPager = findViewById(R.id.view_pager);
 
         //Initializing the bottomNavigationView
+        navigation = findViewById(R.id.bottom_navigation);
         navigation.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -126,13 +126,6 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
 
             }
         });
-        FirebaseQueries.getActive("cal", new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                for (DocumentSnapshot document : task.getResult().getDocuments())
-                    Log.d("HERE", document.getId());
-            }
-        });
         setupViewPager(viewPager);
     }
 
@@ -141,9 +134,10 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         super.onActivityResult(requestCode, resultCode, intent);
         if (requestCode == REQUEST_CODE) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-            player = new SpotifySocketPlayer(response, this, this);
+            player = new SpotifySocketPlayer(response, this, gameFragment);
             gameFragment.setListener(player);
         }
+
     }
 
     @Override
@@ -153,172 +147,70 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
     }
 
     private void setupViewPager(ViewPager viewPager) {
-        adapter = new cAdapter(getSupportFragmentManager());
-        if (gameFragment == null) gameFragment = new GameFragment();
-        if (searchFragment == null) searchFragment = new SearchableFragment();
-        if (profileFragment == null) profileFragment = new ProfileFragment();
-
-        createGame = new CreateGameFragment();
-        gameLanding = new GameLandingFragment();
-
         adapter.addFragment(searchFragment);
         adapter.addFragment(gameLanding);
-        //adapter.addFragment(profileFragment);
         viewPager.setAdapter(adapter);
-
     }
-
-    //Interfaces
-    public void onRandom() {
+    //Public Methods
+    public void startGame() {
+        adapter.replaceFragment(gameFragment, 1);
     }
-
-    @Override
-    public void onPlayerResume() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, "Resumed", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+    public void acceptGame(int gameId){
+        player.acceptGame(gameId);
+        viewPager.setCurrentItem(1);
     }
-
-    @Override
-    public void onPlay() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, "Played", Toast.LENGTH_SHORT).show();
-                adapter.replaceFragment(gameFragment,1);
-            }
-        });
-
-    }
-
-    @Override
-    public void onPlayerPause() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, "Pause", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-    }
-    @Override
-    public void onReceiveId(final String id){
-        Log.d("ID IS,",id);
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, id, Toast.LENGTH_SHORT).show();
-                ProfileFragment pf = ProfileFragment.newInstance(id);
-                //adapter.replaceFragment(pf,2);
-                adapter.addFragment(pf);
-                adapter.notifyDataSetChanged();
-                navigation = findViewById(R.id.bottom_navigation);
-                navigation.setOnNavigationItemSelectedListener(
-                    new BottomNavigationView.OnNavigationItemSelectedListener() {
-                        @Override
-                        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.search:
-                                    viewPager.setCurrentItem(0);
-                                    break;
-                                case R.id.play:
-                                    viewPager.setCurrentItem(1);
-                                    break;
-                                case R.id.profile:
-                                    viewPager.setCurrentItem(2);
-                                    break;
-
-                                default:
-                            }
-                            return false;
+    public void setUpProfile(String id, String name){
+        this.id = id;
+        this.name = name;
+        ProfileFragment pf = ProfileFragment.newInstance(id);
+        adapter.addFragment(pf);
+        adapter.notifyDataSetChanged();
+        navigation = findViewById(R.id.bottom_navigation);
+        navigation.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.search:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.play:
+                                viewPager.setCurrentItem(1);
+                                break;
+                            case R.id.profile:
+                                viewPager.setCurrentItem(2);
+                                break;
+                            default:
                         }
-                    });
-            }
-        });
-    }
-
-    @Override
-    public void onInvite(final int gameId, final String creator) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, "Invited ", Toast.LENGTH_SHORT).show();
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this, R.style.MyAlertDialogTheme);
-                // Add the buttons
-                builder.setMessage("You've been invited to play a game");
-                builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User clicked OK button
-                        Toast.makeText(getApplicationContext(), "You Accepted game invite", Toast.LENGTH_SHORT).show();
-                        player.acceptGame(gameId);
-                        dialog.cancel();
+                        return false;
                     }
                 });
-                builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                        Toast.makeText(getApplicationContext(), "You Declined game invite", Toast.LENGTH_SHORT).show();
-                        dialog.cancel();
-                    }
-                });
-                // Create the AlertDialog
-                AlertDialog dialog = builder.create();
-//        dialog.getWindow().setGravity(Gravity.TOP);
-                dialog.show();
-            }
-        });
-
+    }
+    //Interfaces
+    @Override
+    public void onRandom() {
+        navigation.setVisibility(View.GONE);
+        JSONArray inviteMe = new JSONArray();
+        createGame(inviteMe);
     }
     @Override
-    public void onResult(final String result){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    @Override
-    public void onScore(final int score){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, ""+score, Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-    @Override
-    public void onFinalScore(final int score, final boolean won){
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(MainActivity.this, "Final Score: "+score, Toast.LENGTH_SHORT).show();
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                if(won)
-                    Toast.makeText(MainActivity.this, "You won", Toast.LENGTH_SHORT).show();
-                else
-                    Toast.makeText(MainActivity.this, "You lost", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
     public void onCreate() {
+        navigation.setVisibility(View.GONE);
         adapter.replaceFragment(createGame, 1);
-
     }
-
+    @Override
     public void createGame(JSONArray invitees) {
-        Toast.makeText(this, "creating game", Toast.LENGTH_SHORT).show();
-        player.initiateGame(invitees);
+        while(id == null){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        invitees.put(id);
+        player.initiateGame(invitees,name);
     }
-    private class cAdapter extends FragmentStatePagerAdapter {
+    public class cAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
 
 
@@ -334,15 +226,12 @@ public class MainActivity extends AppCompatActivity implements SocketPlayer.Sock
         }
         @Override
         public int getItemPosition(Object object) {
-            // Causes adapter to reload all Fragments when
-            // notifyDataSetChanged is called
             return POSITION_NONE;
         }
         private void addFragment(Fragment fragment) {
             mFragmentList.add(fragment);
         }
         public void replaceFragment(Fragment fragment, int index) {
-            //fm.beginTransaction().replace(mFragmentList.get((index)),fragment).commit();
             mFragmentList.remove(index);
             mFragmentList.add(index, fragment);
             notifyDataSetChanged();
