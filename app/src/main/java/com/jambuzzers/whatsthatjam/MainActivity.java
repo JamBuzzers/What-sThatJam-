@@ -4,6 +4,7 @@
 package com.jambuzzers.whatsthatjam;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
 
     SocketPlayer player;
     String id =null;
+    String name;
 
     public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
@@ -55,10 +57,10 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         setContentView(R.layout.activity_main);
         FirebaseQueries.removeError();
 
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 
         if (gameFragment == null) gameFragment = GameFragment.newInstance(this);
         if (searchFragment == null) searchFragment = new SearchableFragment();
-        if (profileFragment == null) profileFragment = new ProfileFragment();
         adapter = new cAdapter(getSupportFragmentManager());
         createGame = new CreateGameFragment();
         gameLanding = new GameLandingFragment();
@@ -146,11 +148,12 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     }
     public void acceptGame(int gameId){
         player.acceptGame(gameId);
+        viewPager.setCurrentItem(1);
     }
-    public void setUpProfile(String id){
+    public void setUpProfile(String id, String name){
         this.id = id;
+        this.name = name;
         ProfileFragment pf = ProfileFragment.newInstance(id);
-        //adapter.replaceFragment(pf,2);
         adapter.addFragment(pf);
         adapter.notifyDataSetChanged();
         navigation = findViewById(R.id.bottom_navigation);
@@ -177,16 +180,9 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     //Interfaces
     @Override
     public void onRandom() {
+        navigation.setVisibility(View.GONE);
         JSONArray inviteMe = new JSONArray();
-        while(id == null){
-            try {
-                Thread.sleep(200);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        inviteMe.put(id);
-        player.initiateGame(inviteMe);
+        createGame(inviteMe);
     }
     @Override
     public void onCreate() {
@@ -195,7 +191,15 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     }
     @Override
     public void createGame(JSONArray invitees) {
-        player.initiateGame(invitees);
+        while(id == null){
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        invitees.put(id);
+        player.initiateGame(invitees,name);
     }
     public class cAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();

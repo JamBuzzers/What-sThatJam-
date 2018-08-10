@@ -63,8 +63,8 @@ public class SpotifySocketPlayer implements SocketPlayer {
     public void answer(String answer){
         mSocket.emit("submit",answer);
     }
-    public void initiateGame(JSONArray invitees){
-        mSocket.emit("create",invitees);
+    public void initiateGame(JSONArray invitees, String name){
+        mSocket.emit("create",invitees,name);
     }
     public void acceptGame(int gameId){
         mSocket.emit("accept", gameId);

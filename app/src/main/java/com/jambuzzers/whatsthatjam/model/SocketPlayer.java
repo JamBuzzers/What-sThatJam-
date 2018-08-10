@@ -9,7 +9,7 @@ import java.util.ArrayList;
 public interface SocketPlayer  {
     void pause();
     void answer(String answer);
-    void initiateGame(JSONArray invitees);
+    void initiateGame(JSONArray invitees, String name);
     void acceptGame(int gameId);
     //TODO: Move onDestroy
     interface SocketPlayerListener {

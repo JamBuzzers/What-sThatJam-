@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -51,6 +52,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     private int round=1;
     boolean visible = false;
     MainActivity activity;
+    boolean buttonEnabled = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,6 +64,8 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         ivStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if(!buttonEnabled)
+                    return;
                 mSocketPlayer.pause();
                 enableText();
             }
@@ -94,10 +98,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                etSong.setClickable(true);
-                etSong.setFocusableInTouchMode(true);
-                etSong.setFocusable(true);
-                etSong.requestFocus();
+                enableButton();
             }
         });
 
@@ -113,6 +114,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 }
                 disableText();
                 enableButton();
+                hide();
             }
         });
     }
@@ -133,7 +135,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
             @Override
             public void run() {
                 Toast.makeText(activity, name, Toast.LENGTH_SHORT).show();
-                activity.setUpProfile(id);
+                activity.setUpProfile(id,name);
             }
         });
     }
@@ -201,23 +203,30 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         tvTime.setText(Integer.toString(time));
     }
     @Override
-    public void onNextRound(ArrayList<Pair<String,String>> standing, final String title, final String image, Boolean timeout){
+    public void onNextRound(ArrayList<Pair<String,String>> standing, final String title, final String image, final Boolean timeout){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                reveal(title,image);
+                if(timeout)
+                    tvInfo.setText("Timeout");
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        reveal(title,image);
+                    }
+                }, 2000);
             }
         });
     }
     //Public Methods
-
-
 
     public void setListener(SocketPlayer listener) {
         mSocketPlayer = listener;
     }
     // UI
     public void reveal(String title, String url){
+        tvInfo.setText("");
         GlideApp.with(getContext())
                 .load(url)
                 .into(ivAlbum);
@@ -225,10 +234,15 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         ivAlbum.startAnimation(aniSlide);
         etSong.setText(title);
     }
+    public void hide(){
+        etSong.setText("");
+        GlideApp.with(getContext()).load("").into(ivAlbum);
+    }
     public void disableButton(){
-
+        buttonEnabled = false;
     }
     public void enableButton(){
+        buttonEnabled = true;
 
     }
     public void disableText(){
