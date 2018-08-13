@@ -157,7 +157,17 @@ public class SpotifySocketPlayer implements SocketPlayer {
                     won= true;
                 else
                     won = false;
-                listener.onFinalScore(score,won);
+                JSONArray names = (JSONArray) args[2];
+                JSONArray scores = (JSONArray) args[3];
+                ArrayList<Pair<String,String>> pairs = new ArrayList<>();
+                for(int i = 0; i <names.length();i++) {
+                    try {
+                        pairs.add(new Pair<String,String>(names.getString(i),scores.getString(i)));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                listener.onFinalScore(score,won,pairs);
             }
         });
         mSocket.on("timer", new Emitter.Listener() {

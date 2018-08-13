@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -230,8 +231,8 @@ public class MainActivity extends AppCompatActivity implements
         createGame(recentInvitees);
     }
     //GameListener
-    public void onEnd(){
-        adapter.replaceFragment(endGameFragment,1);
+    public void onEnd(ArrayList<Pair<String,String>> standing){
+        adapter.replaceFragment(EndGameFragment.newInstance(standing),1);
     }
     public class cAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();

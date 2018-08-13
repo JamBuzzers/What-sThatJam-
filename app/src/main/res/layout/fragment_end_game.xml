@@ -7,6 +7,11 @@
     android:orientation="vertical">
 
 
+    <android.support.v7.widget.RecyclerView
+        android:layout_height="300dp"
+        android:layout_width="match_parent"
+        android:id="@+id/rvScores"/>
+
     <Button
         android:id="@+id/btHome"
         android:layout_width="match_parent"

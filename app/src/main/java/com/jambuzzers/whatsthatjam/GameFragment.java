@@ -38,7 +38,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     private GameListener listener;
 
     public  interface GameListener{
-        void onEnd();
+        void onEnd(ArrayList<Pair<String,String>> standing);
     }
 
 
@@ -198,12 +198,12 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         });
     }
     @Override
-    public void onFinalScore(final int score, final boolean won){
+    public void onFinalScore(final int score, final boolean won,final ArrayList<Pair<String,String>> standing){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 visible = false;
-                listener.onEnd();
+                listener.onEnd(standing);
             }
         });
     }
