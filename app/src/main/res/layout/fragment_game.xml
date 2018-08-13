@@ -132,12 +132,12 @@
             android:textColor="@color/primaryTextColor"
             android:textSize="18sp"
             android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/ivAlbum"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/black"
-            />
+            android:background="@android:color/black" />
     </FrameLayout>
 
 

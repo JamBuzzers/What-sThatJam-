@@ -76,9 +76,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     MainActivity activity;
     boolean buttonEnabled = true;
 
-    FirebaseStorage storage;
-    StorageReference storageReference;
-    DatabaseReference Ref;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,7 +91,6 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         for(String u : uPlaying){
             View child = getChildView(u);
             nHscroll.addView(child);
-            Toast.makeText(context,"Added " + u, Toast.LENGTH_SHORT).show();
         }
 
         ivStop.setOnClickListener(new View.OnClickListener() {
@@ -133,16 +130,10 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         final ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
         textView.setText(mUsername);
 
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
 
-
-        Ref = FirebaseDatabase.getInstance().getReference().child("users");
         FirebaseQueries.queryUserName(mUsername, new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                String TAG = "BY ID";
-
                 if (task.isSuccessful()) {
                     Log.d("tag", "it was successful");
                     for (QueryDocumentSnapshot document : task.getResult()) {
@@ -154,7 +145,6 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                                     .transform(new RoundedCorners(100))
                                     .circleCrop()
                                     .into(imageView);
-
                         } else {
                             Log.d("tag", "Error getting document: ", task.getException());
                         }
