@@ -64,9 +64,13 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
                 .transform(new RoundedCorners(100))
                 .circleCrop()
                 .into(holder.profPic);
-    if(users.get(position).online)
+    if(users.get(position).online) {
         holder.activeGreen.setVisibility(View.VISIBLE);
+    }else{
+        holder.activeGreen.setVisibility(View.GONE);
     }
+    }
+
 
 
     @Override
