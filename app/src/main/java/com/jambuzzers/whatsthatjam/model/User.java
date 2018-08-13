@@ -9,6 +9,7 @@ public class User {
     public String username;
     public String id;
     public String url;
+    public Boolean online;
 
     public User(DocumentSnapshot document){
         if(document.getData().get("name")!=null)
@@ -20,5 +21,9 @@ public class User {
         else
             url="";
         id = document.getId();
+        if(document.getData().get("active") != null)
+            online = (Boolean) document.getData().get("active");
+        else
+            online = false;
     }
 }
