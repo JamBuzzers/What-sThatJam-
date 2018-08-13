@@ -20,8 +20,9 @@ public interface SocketPlayer  {
         void onReceiveId(String name, String id);
         void onResult(String result);
         void onScore(int score);
-        void onFinalScore(int score, boolean won);
+        void onFinalScore(int score, boolean won,ArrayList<Pair<String, String>> standings);
         void onTimer(int time);
         void onNextRound(ArrayList<Pair<String, String>> standings, String title, String image, Boolean timeout);
+        void onFirstRound(ArrayList<String> names);
     }
 }
