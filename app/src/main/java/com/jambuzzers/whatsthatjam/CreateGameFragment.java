@@ -91,7 +91,6 @@ public class CreateGameFragment extends Fragment {
                 if(s.length() ==1 )
                 {
                     allUsers.clear();
-
                     FirebaseQueries.getActive(s,new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {

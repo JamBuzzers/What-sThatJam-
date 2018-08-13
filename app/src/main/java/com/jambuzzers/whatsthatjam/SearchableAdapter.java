@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,11 +33,6 @@ import butterknife.ButterKnife;
 public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.ViewHolder> {
 
     ArrayList<User> users;
-
-    FirebaseStorage storage;
-    StorageReference storageReference;
-    DatabaseReference Ref;
-
     Context context;
 
     public SearchableAdapter(ArrayList<User> u) {
@@ -70,6 +66,15 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
         }else{
             holder.activeGreen.setVisibility(View.GONE);
         }
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               //Go to firend profile
+
+//                Toast.makeText(context,"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 
