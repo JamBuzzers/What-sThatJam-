@@ -1,39 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#08202A"
+    android:background="@drawable/image2"
     tools:context=".GameLandingFragment">
-
-    <ImageView
-        android:id="@+id/image"
-        android:layout_width="match_parent"
-        android:layout_height="395dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/gamev"
-        android:scaleType="centerCrop" />
 
     <Button
         android:id="@+id/btRandom"
-        android:layout_width="300dp"
+        android:layout_width="270dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="136dp"
-        android:elevation="0dp"
-        android:text="random play" />
+        android:layout_marginBottom="161dp"
+        android:background="@drawable/rounded_rectangle"
+        android:backgroundTint="@color/colorPrimary"
+        android:elevation="4dp"
+        android:fontFamily="@font/alike"
+        android:text="Single player"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+    <!-- random play is single player -->
+
 
     <Button
         android:id="@+id/btCreate"
-        android:layout_width="300dp"
+        android:layout_width="270dp"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="197dp"
-        android:text="create a game"
-        />
+        android:layout_marginBottom="90dp"
+        android:background="@drawable/rounded_rectangle"
+        android:backgroundTint="#484444"
+        android:fontFamily="@font/alike"
+        android:text="Multi player"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+        <!--create game is multi player -->
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="462dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/logo2" />
 
 </RelativeLayout>
