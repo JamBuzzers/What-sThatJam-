@@ -101,30 +101,24 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="50dp">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp" />
+        <!--<LinearLayout-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--android:orientation="vertical">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Me"
-                android:textColor="@color/white"/>
+            <!--<HorizontalScrollView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_margin="2dp">-->
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="1"
-                android:textColor="@color/white"/>
-        </LinearLayout>
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/hscroll2"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="45dp"-->
+                    <!--android:orientation="horizontal" />-->
+            <!--</HorizontalScrollView>-->
+
+        <!--</LinearLayout>-->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent">

@@ -21,10 +21,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
+import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.ArrayList;
 
@@ -49,10 +52,15 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     @BindView(R.id.ivAlbum) ImageView ivAlbum;
     @BindView(R.id.tvInfo) TextView tvInfo;
 
+//    @BindView(R.id.hscroll) LinearLayout nHscroll;
+
+//    ArrayList<User> uPlaying;
+
     private int round=1;
     boolean visible = false;
     MainActivity activity;
     boolean buttonEnabled = true;
+//    User muser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -83,15 +91,36 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
             }
         });
         disableText();
+//        View child = getChildView(muser);
+//        nHscroll.addView(child);
+//        for(User u : uPlaying) {
+//            View child = getChildView(u);
+//            nHscroll.addView(child);
+//        }
+
         return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
-
     }
+
+//    private View getChildView(User u) {
+//        View view = LayoutInflater.from(getContext()).inflate(R.layout.item_playing, null);
+//        TextView textView = view.findViewById(R.id.tvName);
+//        ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
+//        textView.setText(u.username);
+//
+//        GlideApp.with(getContext())
+//                .load(u.url)
+//                .centerCrop()
+//                .transform(new RoundedCorners(100))
+//                .circleCrop()
+//                .into(imageView);
+//
+//        return view;
+//    }
+
     //Listeners
     @Override
     public void onPlayerResume() {
