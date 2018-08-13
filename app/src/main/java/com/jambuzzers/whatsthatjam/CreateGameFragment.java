@@ -6,12 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SearchView;
@@ -21,12 +19,8 @@ import android.widget.Toast;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.User;
 
@@ -51,8 +45,6 @@ public class CreateGameFragment extends Fragment {
 
     @BindView(R.id.hscroll)
     LinearLayout mHscroll;
-
-    Boolean boxState = false;
 
     private CreateGameListener mListener;
 
@@ -127,13 +119,11 @@ public class CreateGameFragment extends Fragment {
         }
     }
 
-
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
-
 
     public interface CreateGameListener {
         void createGame(JSONArray invitees);
@@ -144,10 +134,7 @@ public class CreateGameFragment extends Fragment {
         ArrayList<User> users;
         ArrayList<User> invitees;
         Context context;
-
-        FirebaseStorage storage;
-        StorageReference storageReference;
-        DatabaseReference Ref;
+        Boolean boxState = false;
 
         public CreateGameAdapter(ArrayList<User> u, ArrayList<User> inv) {
             invitees = inv;
@@ -217,7 +204,6 @@ public class CreateGameFragment extends Fragment {
                     .into(imageView);
             return view;
         }
-
 
         @Override
         public int getItemCount() {

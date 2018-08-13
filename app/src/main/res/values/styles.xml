@@ -14,9 +14,5 @@
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
-    <!-- The launcher theme. It sets the main window background to the launch_screen drawable. Splash screen -->
-    <style name="AppTheme.Launcher">
-        <item name="android:windowBackground">@drawable/launch_screen</item>
-    </style>
 
 </resources>

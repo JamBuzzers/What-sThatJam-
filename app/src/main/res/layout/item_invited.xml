@@ -25,6 +25,6 @@
         android:textSize="10sp"
         android:gravity="center"
         android:layout_marginBottom="2dp"
-        />
+        android:textColor="@color/secondaryTextColor"/>
 
 </LinearLayout>

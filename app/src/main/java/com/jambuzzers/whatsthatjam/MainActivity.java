@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements
     public static final int REQUEST_CODE = 1337;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         super.onCreate(savedInstanceState);
