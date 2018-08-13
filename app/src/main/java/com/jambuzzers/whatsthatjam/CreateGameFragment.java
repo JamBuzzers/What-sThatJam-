@@ -134,7 +134,6 @@ public class CreateGameFragment extends Fragment {
         ArrayList<User> users;
         ArrayList<User> invitees;
         Context context;
-        Boolean boxState = false;
 
         public CreateGameAdapter(ArrayList<User> u, ArrayList<User> inv) {
             invitees = inv;
@@ -177,11 +176,9 @@ public class CreateGameFragment extends Fragment {
                     invitees.add(users.get(position));
                     View child = getChildView(users.get(position));
                     mHscroll.addView(child);
-                    if (!boxState) {
-                        holder.check_box.setChecked(boxState);
-                        boxState = true;
-                    }
+                    holder.check_box.setChecked(false);
                     holder.minvited.setVisibility(View.VISIBLE);
+
                     Toast.makeText(getContext(),"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
                 }
             });
