@@ -197,6 +197,21 @@ public class SpotifySocketPlayer implements SocketPlayer {
 
             }
         });
+        mSocket.on("first round", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                JSONArray names = (JSONArray) args[0];
+                ArrayList<String> arrnames = new ArrayList<>();
+                for(int i = 0 ; i < names.length();i++) {
+                    try {
+                        arrnames.add(names.getString(i));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                listener.onFirstRound(arrnames);
+            }
+        });
 
     }
 }

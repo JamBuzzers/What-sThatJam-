@@ -23,5 +23,6 @@ public interface SocketPlayer  {
         void onFinalScore(int score, boolean won,ArrayList<Pair<String, String>> standings);
         void onTimer(int time);
         void onNextRound(ArrayList<Pair<String, String>> standings, String title, String image, Boolean timeout);
+        void onFirstRound(ArrayList<String> names);
     }
 }

@@ -230,6 +230,10 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
             }
         });
     }
+    @Override
+    public void onFirstRound(ArrayList<String> names){
+
+    }
     //Public Methods
 
     public void setListener(SocketPlayer listener) {
