@@ -10,7 +10,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +47,10 @@ public class CreateGameFragment extends Fragment {
     ArrayList<User> users;
     ArrayList<User> allUsers;
     ArrayList<User> invitees= new ArrayList<User>();
+
+    @BindView(R.id.hscroll)
+    LinearLayout mHscroll;
+
     private CreateGameListener mListener;
 
     @Override
@@ -119,6 +125,7 @@ public class CreateGameFragment extends Fragment {
         }
     }
 
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -158,54 +165,44 @@ public class CreateGameFragment extends Fragment {
         @Override
         public void onBindViewHolder(@NonNull final CreateGameAdapter.ViewHolder holder, final int position) {
             holder.name.setText(users.get(position).username);
+            String murl = users.get(position).url;
+            GlideApp.with(context)
+                    .load(murl)
+                    .centerCrop()
+                    .transform(new RoundedCorners(100))
+                    .circleCrop()
+                    .into(holder.profSearchPic);
 
-            storage = FirebaseStorage.getInstance();
-            storageReference = storage.getReference();
 
-            Ref = FirebaseDatabase.getInstance().getReference().child("users");
-            FirebaseQueries.userById(users.get(position).id, new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    String TAG = "BY ID";
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
-                            Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-
-                            if (document.get("profileurl") != null) {
-                                String url = document.get("profileurl").toString();
-
-                                if (!url.equals("")) {
-                                    GlideApp.with(context)
-                                            .load(url)
-                                            .centerCrop()
-                                            .transform(new RoundedCorners(100))
-                                            .circleCrop()
-                                            .into(holder.profPic);
-                                }
-                            }
-//                            if (document.get("active") == true) {
-//                                holder.activeGreen.setVisibility(View.VISIBLE);
-//                            }
-                        } else {
-                            Log.d(TAG, "No such document");
-                        }
-                    } else {
-                        Log.d(TAG, "get failed with ", task.getException());
-                    }
-                }
-            });
 
             holder.name.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     invitees.add(users.get(position));
-                    Toast.makeText(getContext(),"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
+                    View child = getChildView(users.get(position));
+                    mHscroll.addView(child);
 
+                    Toast.makeText(getContext(),"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
                 }
             });
+
         }
+
+        private View getChildView(User user) {
+            View view = LayoutInflater.from(context).inflate(R.layout.item_invited, null);
+            TextView textView = view.findViewById(R.id.tvName);
+            ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
+            textView.setText(user.username);
+
+            GlideApp.with(context)
+                    .load(user.url)
+                    .centerCrop()
+                    .transform(new RoundedCorners(100))
+                    .circleCrop()
+                    .into(imageView);
+            return view;
+        }
+
 
         @Override
         public int getItemCount() {
@@ -217,7 +214,8 @@ public class CreateGameFragment extends Fragment {
             TextView name;
 
             @BindView(R.id.ivSearchProfPic)
-            ImageView profPic;
+            ImageView profSearchPic;
+
 
 
             public ViewHolder(View itemView) {
