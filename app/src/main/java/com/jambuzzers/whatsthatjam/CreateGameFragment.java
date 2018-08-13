@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -51,6 +52,7 @@ public class CreateGameFragment extends Fragment {
     @BindView(R.id.hscroll)
     LinearLayout mHscroll;
 
+    Boolean boxState = false;
 
     private CreateGameListener mListener;
 
@@ -164,6 +166,13 @@ public class CreateGameFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(@NonNull final CreateGameAdapter.ViewHolder holder, final int position) {
+            holder.check_box.setVisibility(View.VISIBLE);
+            holder.minvited.setVisibility(View.GONE);
+
+            if(invitees.contains(users.get(position))){
+                holder.minvited.setVisibility(View.VISIBLE);
+            }
+
             holder.name.setText(users.get(position).username);
             String murl = users.get(position).url;
             GlideApp.with(context)
@@ -181,10 +190,15 @@ public class CreateGameFragment extends Fragment {
                     invitees.add(users.get(position));
                     View child = getChildView(users.get(position));
                     mHscroll.addView(child);
-
+                    if (!boxState) {
+                        holder.check_box.setChecked(boxState);
+                        boxState = true;
+                    }
+                    holder.minvited.setVisibility(View.VISIBLE);
                     Toast.makeText(getContext(),"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
                 }
             });
+
 
         }
 
@@ -193,6 +207,7 @@ public class CreateGameFragment extends Fragment {
             TextView textView = view.findViewById(R.id.tvName);
             ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
             textView.setText(user.username);
+
 
             GlideApp.with(context)
                     .load(user.url)
@@ -216,7 +231,9 @@ public class CreateGameFragment extends Fragment {
             @BindView(R.id.ivSearchProfPic)
             ImageView profSearchPic;
 
+            @BindView(R.id.checkBox) CheckBox check_box;
 
+            @BindView(R.id.ivYes) ImageView minvited;
 
             public ViewHolder(View itemView) {
                 super(itemView);

@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,6 +52,7 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
+        holder.mCheckBox.setVisibility(View.GONE);
 
         holder.name.setText(users.get(position).username);
         String murl = users.get(position).url;
@@ -88,6 +90,8 @@ public class SearchableAdapter extends RecyclerView.Adapter<SearchableAdapter.Vi
         @BindView(R.id.tvName) TextView name;
         @BindView(R.id.ivSearchProfPic) ImageView profPic;
         @BindView(R.id.ivOnline) ImageView activeGreen;
+        @BindView(R.id.checkBox) CheckBox mCheckBox;
+
         public ViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);

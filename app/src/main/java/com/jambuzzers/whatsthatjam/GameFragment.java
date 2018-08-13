@@ -134,7 +134,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity, name, Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity,"Welcome back " + name, Toast.LENGTH_SHORT).show();
                 activity.setUpProfile(id,name);
             }
         });
@@ -157,6 +157,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                         // User cancelled the dialog
                         Toast.makeText(activity, "You Declined game invite", Toast.LENGTH_SHORT).show();
                         dialog.cancel();
+
                     }
                 });
                 AlertDialog dialog = builder.create();
