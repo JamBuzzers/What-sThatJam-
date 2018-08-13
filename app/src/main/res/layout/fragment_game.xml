@@ -101,37 +101,19 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="50dp">
-        <!--<LinearLayout-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="match_parent"-->
-            <!--android:orientation="vertical">-->
-
-            <!--<HorizontalScrollView-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_margin="2dp">-->
-
-                <!--<LinearLayout-->
-                    <!--android:id="@+id/hscroll2"-->
-                    <!--android:layout_width="match_parent"-->
-                    <!--android:layout_height="45dp"-->
-                    <!--android:orientation="horizontal" />-->
-            <!--</HorizontalScrollView>-->
-
-        <!--</LinearLayout>-->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-        </LinearLayout>
-
-        <LinearLayout
 
 
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp">
 
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/hscroll2"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
 
     </LinearLayout>
 
@@ -159,7 +141,6 @@
     </FrameLayout>
 
 
-
     <EditText
         android:id="@+id/etSongTitle"
         android:layout_width="271dp"
@@ -167,10 +148,10 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
-        android:inputType="text"
+        android:backgroundTint="@color/white"
         android:gravity="center"
-        android:textColor="@color/white"
-        android:backgroundTint="@color/white"/>
+        android:inputType="text"
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/ivStop"

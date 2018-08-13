@@ -4,12 +4,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,6 +28,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 import com.jambuzzers.whatsthatjam.model.User;
 
@@ -40,6 +52,8 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     private SocketPlayer mSocketPlayer; //check for null pointers
     private GameListener listener;
 
+    Context context;
+
     public  interface GameListener{
         void onEnd(ArrayList<Pair<String,String>> standing);
     }
@@ -53,22 +67,34 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     @BindView(R.id.ivAlbum) ImageView ivAlbum;
     @BindView(R.id.tvInfo) TextView tvInfo;
 
-//    @BindView(R.id.hscroll) LinearLayout nHscroll;
+    @BindView(R.id.hscroll2) LinearLayout nHscroll;
 
-//    ArrayList<User> uPlaying;
+    ArrayList<String> uPlaying;
 
     private int round=1;
     boolean visible = false;
     MainActivity activity;
     boolean buttonEnabled = true;
-//    User muser;
+
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    DatabaseReference Ref;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        context = container.getContext();
         View view =  inflater.inflate(R.layout.fragment_game, container, false);
+
         ButterKnife.bind(this,view);
         ((AppCompatActivity) getActivity()).getSupportActionBar().hide();
+
+
+        for(String u : uPlaying){
+            View child = getChildView(u);
+            nHscroll.addView(child);
+            Toast.makeText(context,"Added " + u, Toast.LENGTH_SHORT).show();
+        }
 
         ivStop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,12 +118,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
             }
         });
         disableText();
-//        View child = getChildView(muser);
-//        nHscroll.addView(child);
-//        for(User u : uPlaying) {
-//            View child = getChildView(u);
-//            nHscroll.addView(child);
-//        }
+
 
         return view;
     }
@@ -106,21 +127,44 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         super.onViewCreated(view, savedInstanceState);
     }
 
-//    private View getChildView(User u) {
-//        View view = LayoutInflater.from(getContext()).inflate(R.layout.item_playing, null);
-//        TextView textView = view.findViewById(R.id.tvName);
-//        ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
-//        textView.setText(u.username);
-//
-//        GlideApp.with(getContext())
-//                .load(u.url)
-//                .centerCrop()
-//                .transform(new RoundedCorners(100))
-//                .circleCrop()
-//                .into(imageView);
-//
-//        return view;
-//    }
+    private View getChildView(final String mUsername) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_playing, null);
+        TextView textView = view.findViewById(R.id.tvName);
+        final ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
+        textView.setText(mUsername);
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
+
+        Ref = FirebaseDatabase.getInstance().getReference().child("users");
+        FirebaseQueries.queryUserName(mUsername, new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                String TAG = "BY ID";
+
+                if (task.isSuccessful()) {
+                    Log.d("tag", "it was successful");
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (document.getData().get("name") != null && ((String) document.getData().get("name")).contains(mUsername)) {
+                            String url = document.getData().get("profileurl").toString();
+                            GlideApp.with(context)
+                                    .load(url)
+                                    .centerCrop()
+                                    .transform(new RoundedCorners(100))
+                                    .circleCrop()
+                                    .into(imageView);
+
+                        } else {
+                            Log.d("tag", "Error getting document: ", task.getException());
+                        }
+                    }
+                }
+            }
+        });
+        return view;
+    }
+
 
     //Listeners
     @Override
@@ -262,7 +306,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     }
     @Override
     public void onFirstRound(ArrayList<String> names){
-
+       uPlaying = names;
     }
     //Public Methods
 
