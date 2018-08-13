@@ -15,6 +15,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -27,12 +28,18 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 import com.spotify.sdk.android.player.Spotify;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity implements GameLandingFragment.GameLandingListener,CreateGameFragment.CreateGameListener {
+public class MainActivity extends AppCompatActivity implements
+        GameLandingFragment.GameLandingListener,
+        CreateGameFragment.CreateGameListener,
+        EndGameFragment.EndListener,
+        GameFragment.GameListener
+{
 
     private BottomNavigationView navigation;
     private ViewPager viewPager;
@@ -41,14 +48,15 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
     SplashFragment splashFragment;
     SearchableFragment searchFragment;
     public GameFragment gameFragment;
-    ProfileFragment profileFragment;
     GameLandingFragment gameLanding;
     CreateGameFragment createGame;
+    EndGameFragment endGameFragment;
     MenuItem prevMenuItem;
 
     SocketPlayer player;
     String id =null;
     String name;
+    JSONArray recentInvitees;
 
     public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
@@ -73,6 +81,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         adapter = new cAdapter(getSupportFragmentManager());
         createGame = new CreateGameFragment();
         gameLanding = new GameLandingFragment();
+        endGameFragment = new EndGameFragment();
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
@@ -187,6 +196,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
                 });
     }
     //Interfaces
+    //GameLanding
     @Override
     public void onRandom() {
         navigation.setVisibility(View.GONE);
@@ -198,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
         navigation.setVisibility(View.GONE);
         adapter.replaceFragment(createGame, 1);
     }
+    //CreateGame
     @Override
     public void createGame(JSONArray invitees) {
         while(id == null){
@@ -207,8 +218,30 @@ public class MainActivity extends AppCompatActivity implements GameLandingFragme
                 e.printStackTrace();
             }
         }
+
+        recentInvitees = new JSONArray();
+        for(int i = 0; i < invitees.length(); i++) {
+            try {
+                recentInvitees.put(invitees.get(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
         invitees.put(id);
         player.initiateGame(invitees,name);
+    }
+    //EndGame
+    public void reset(){
+        navigation.setVisibility(View.VISIBLE);
+        adapter.replaceFragment(gameLanding, 1);
+    }
+    public void rematch()
+    {
+        createGame(recentInvitees);
+    }
+    //GameListener
+    public void onEnd(ArrayList<Pair<String,String>> standing){
+        adapter.replaceFragment(EndGameFragment.newInstance(standing),1);
     }
     public class cAdapter extends FragmentStatePagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();

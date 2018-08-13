@@ -32,13 +32,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 
-/**
- * Handles all the game view. Checks the edit text and gets a track from the array 20 to play
- * Should handle when the song plays and stops the song
- */
 public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerListener{
 
     private SocketPlayer mSocketPlayer; //check for null pointers
+    private GameListener listener;
+
+    public  interface GameListener{
+        void onEnd(ArrayList<Pair<String,String>> standing);
+    }
 
 
     @BindView(R.id.etSongTitle) EditText etSong;
@@ -105,12 +106,20 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     }
     @Override
     public void onPlay() {
+
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if(!visible){
                     activity.startGame();
                     visible = true;
+                }
+                while(getActivity() == null) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
                 disableText();
                 enableButton();
@@ -189,10 +198,12 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         });
     }
     @Override
-    public void onFinalScore(final int score, final boolean won){
+    public void onFinalScore(final int score, final boolean won,final ArrayList<Pair<String,String>> standing){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                visible = false;
+                listener.onEnd(standing);
             }
         });
     }
@@ -218,6 +229,10 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 }, 2000);
             }
         });
+    }
+    @Override
+    public void onFirstRound(ArrayList<String> names){
+
     }
     //Public Methods
 
@@ -260,5 +275,15 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         GameFragment gf = new GameFragment();
         gf.activity = act;
         return gf;
+    }
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof GameListener) {
+            listener = (GameListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
     }
 }
