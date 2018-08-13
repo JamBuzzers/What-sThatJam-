@@ -51,6 +51,7 @@ public class CreateGameFragment extends Fragment {
     @BindView(R.id.hscroll)
     LinearLayout mHscroll;
 
+
     private CreateGameListener mListener;
 
     @Override
@@ -175,7 +176,7 @@ public class CreateGameFragment extends Fragment {
 
 
 
-            holder.name.setOnClickListener(new View.OnClickListener() {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     invitees.add(users.get(position));
