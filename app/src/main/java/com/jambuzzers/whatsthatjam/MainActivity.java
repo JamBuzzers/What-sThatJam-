@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     //Public Methods
     public void startGame() {
+        navigation.setVisibility(View.GONE);
         adapter.replaceFragment(gameFragment, 1);
     }
     public void acceptGame(int gameId){
@@ -236,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     //GameListener
     public void onEnd(ArrayList<Pair<String,String>> standing){
+
         adapter.replaceFragment(EndGameFragment.newInstance(standing),1);
     }
     public class cAdapter extends FragmentStatePagerAdapter {

@@ -16,4 +16,5 @@
         android:src="@drawable/wtjlogo"
         android:layout_gravity="center"/>
 
+
 </FrameLayout>
