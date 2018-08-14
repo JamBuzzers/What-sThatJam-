@@ -63,7 +63,6 @@ public class MainActivity extends AppCompatActivity implements
     public static final int REQUEST_CODE = 1337;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.AppTheme);
         ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         super.onCreate(savedInstanceState);
@@ -231,6 +230,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     //EndGame
     public void reset(){
+        navigation.setVisibility(View.VISIBLE);
         adapter.replaceFragment(gameLanding, 1);
     }
     public void rematch()
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     //GameListener
     public void onEnd(ArrayList<Pair<String,String>> standing){
-        navigation.setVisibility(View.VISIBLE);
+
         adapter.replaceFragment(EndGameFragment.newInstance(standing),1);
     }
     public class cAdapter extends FragmentStatePagerAdapter {

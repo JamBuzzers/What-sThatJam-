@@ -17,7 +17,7 @@
         android:background="@drawable/rounded_rectangle"
         android:backgroundTint="@color/colorPrimary"
         android:elevation="4dp"
-        android:fontFamily="@font/alike"
+        android:fontFamily="@font/roboto_bold"
         android:text="Single player"
         android:textColor="@color/white"
         android:textSize="20sp" />
@@ -33,7 +33,7 @@
         android:layout_marginBottom="90dp"
         android:background="@drawable/rounded_rectangle"
         android:backgroundTint="#484444"
-        android:fontFamily="@font/alike"
+        android:fontFamily="@font/roboto_bold"
         android:text="Multi player"
         android:textColor="@color/white"
         android:textSize="20sp" />
