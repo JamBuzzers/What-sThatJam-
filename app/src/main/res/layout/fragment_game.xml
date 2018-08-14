@@ -101,41 +101,19 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="50dp">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp" />
 
-            <TextView
+
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Me" />
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="1" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-        </LinearLayout>
-
-        <LinearLayout
-
-
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/hscroll2"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
 
     </LinearLayout>
 
@@ -154,14 +132,13 @@
             android:textColor="@color/primaryTextColor"
             android:textSize="18sp"
             android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/ivAlbum"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/black"
-            />
+            android:background="@android:color/black" />
     </FrameLayout>
-
 
 
     <EditText
@@ -181,8 +158,5 @@
         android:layout_width="match_parent"
         android:layout_height="55dp"
         android:src="@android:drawable/ic_media_pause" />
-
-
-
 
 </LinearLayout>

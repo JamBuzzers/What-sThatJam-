@@ -9,10 +9,14 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,6 +42,10 @@ public class CreateGameFragment extends Fragment {
     ArrayList<User> users;
     ArrayList<User> allUsers;
     ArrayList<User> invitees= new ArrayList<User>();
+
+    @BindView(R.id.hscroll)
+    LinearLayout mHscroll;
+
     private CreateGameListener mListener;
 
     @Override
@@ -117,7 +125,6 @@ public class CreateGameFragment extends Fragment {
         mListener = null;
     }
 
-
     public interface CreateGameListener {
         void createGame(JSONArray invitees);
     }
@@ -126,6 +133,7 @@ public class CreateGameFragment extends Fragment {
 
         ArrayList<User> users;
         ArrayList<User> invitees;
+        Context context;
 
         public CreateGameAdapter(ArrayList<User> u, ArrayList<User> inv) {
             invitees = inv;
@@ -134,7 +142,7 @@ public class CreateGameFragment extends Fragment {
 
         @Override
         public CreateGameAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-            Context context = viewGroup.getContext();
+            context = viewGroup.getContext();
             LayoutInflater inflater = LayoutInflater.from(context);
             View searchView = inflater.inflate(R.layout.item_search, viewGroup, false);
 
@@ -143,15 +151,55 @@ public class CreateGameFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull CreateGameAdapter.ViewHolder holder, final int position) {
+        public void onBindViewHolder(@NonNull final CreateGameAdapter.ViewHolder holder, final int position) {
+            holder.check_box.setVisibility(View.VISIBLE);
+            holder.minvited.setVisibility(View.GONE);
+
+            if(invitees.contains(users.get(position))){
+                holder.minvited.setVisibility(View.VISIBLE);
+            }
+
             holder.name.setText(users.get(position).username);
-            holder.name.setOnClickListener(new View.OnClickListener() {
+            String murl = users.get(position).url;
+            GlideApp.with(context)
+                    .load(murl)
+                    .centerCrop()
+                    .transform(new RoundedCorners(100))
+                    .circleCrop()
+                    .into(holder.profSearchPic);
+
+
+
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     invitees.add(users.get(position));
+                    View child = getChildView(users.get(position));
+                    mHscroll.addView(child);
+                    holder.check_box.setChecked(false);
+                    holder.minvited.setVisibility(View.VISIBLE);
+
                     Toast.makeText(getContext(),"adding user: "+users.get(position).username,Toast.LENGTH_SHORT).show();
                 }
             });
+
+
+        }
+
+        private View getChildView(User user) {
+            View view = LayoutInflater.from(context).inflate(R.layout.item_invited, null);
+            TextView textView = view.findViewById(R.id.tvName);
+            ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
+            textView.setText(user.username);
+
+
+            GlideApp.with(context)
+                    .load(user.url)
+                    .centerCrop()
+                    .transform(new RoundedCorners(100))
+                    .circleCrop()
+                    .into(imageView);
+            return view;
         }
 
         @Override
@@ -162,6 +210,13 @@ public class CreateGameFragment extends Fragment {
         public class ViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.tvName)
             TextView name;
+
+            @BindView(R.id.ivSearchProfPic)
+            ImageView profSearchPic;
+
+            @BindView(R.id.checkBox) CheckBox check_box;
+
+            @BindView(R.id.ivYes) ImageView minvited;
 
             public ViewHolder(View itemView) {
                 super(itemView);

@@ -1,7 +1,9 @@
 package com.jambuzzers.whatsthatjam;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,6 +32,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
+import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.UUID;
 
@@ -57,6 +61,8 @@ public class ProfileFragment extends Fragment  {
     FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference Ref;
+    Context context;
+    User u;
 
 
 
@@ -70,16 +76,22 @@ public class ProfileFragment extends Fragment  {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_profile, container, false);
+        context = container.getContext();
         ButterKnife.bind(this,view);
         if(getArguments() != null)
         {
             username = getArguments().getString("username");
             Name.setText(username);
         }
+        String nUrl = context.getSharedPreferences("deadpool", Context.MODE_PRIVATE).getString("imgurl","@drawable/instagram_user_filled_24");
+        GlideApp.with(getContext())
+                .load(nUrl)
+                .into(Profile);
         return view;
     }
 
     public void onViewCreated(View view, Bundle savedInstanceState) {
+
 
         Upload_btn = view.findViewById(R.id.upload_btn);
         Upload_btn.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +103,6 @@ public class ProfileFragment extends Fragment  {
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
-
 
 
         Ref = FirebaseDatabase.getInstance().getReference().child("users");
@@ -106,6 +117,9 @@ public class ProfileFragment extends Fragment  {
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                         if(document.get("profileurl") != null) {
                             String url = document.get("profileurl").toString();
+                            SharedPreferences.Editor meditor = context.getSharedPreferences("deadpool", Context.MODE_PRIVATE).edit();
+                            meditor.putString("imgurl", url);
+                            meditor.commit();
                             GlideApp.with(getContext())
                                     .load(url)
                                     .into(Profile);
