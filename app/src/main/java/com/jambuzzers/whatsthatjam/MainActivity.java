@@ -12,13 +12,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 
+import com.jambuzzers.whatsthatjam.model.CustomViewPager;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
 import com.jambuzzers.whatsthatjam.model.SpotifySocketPlayer;
@@ -33,6 +34,9 @@ import org.json.JSONException;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 
 public class MainActivity extends AppCompatActivity implements
         GameLandingFragment.GameLandingListener,
@@ -41,8 +45,6 @@ public class MainActivity extends AppCompatActivity implements
         GameFragment.GameListener
 {
 
-    private BottomNavigationView navigation;
-    private ViewPager viewPager;
     cAdapter adapter;
     //define fragments
     SplashFragment splashFragment;
@@ -58,57 +60,42 @@ public class MainActivity extends AppCompatActivity implements
     String name;
     JSONArray recentInvitees;
 
+    @BindView(R.id.view_pager)
+    CustomViewPager viewPager;
+    @BindView(R.id.bottom_navigation) BottomNavigationView navigation;
+    @BindView(R.id.placeholder)
+    FrameLayout flPlaceholder;
+
     public static final String CLIENT_ID = "cb1084779ae74d51becf812efa34c4c8";
     private static final String REDIRECT_URI = "https://www.google.com/";
     public static final int REQUEST_CODE = 1337;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        getSupportActionBar().hide();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
+
         FirebaseQueries.removeError();
 
-        //FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
-        //fts.replace(R.id.placeholder, new SplashFragment());
-        //fts.commit();
+
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 
-        if (gameFragment == null) gameFragment = GameFragment.newInstance(this);
-        if (searchFragment == null) searchFragment = new SearchableFragment();
+        gameFragment = GameFragment.newInstance(this);
+        searchFragment = new SearchableFragment();
         adapter = new cAdapter(getSupportFragmentManager());
         createGame = new CreateGameFragment();
         gameLanding = new GameLandingFragment();
         endGameFragment = new EndGameFragment();
+        splashFragment = new SplashFragment();
 
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID, AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-read-private", "streaming"});
         AuthenticationRequest request = builder.build();
         AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
 
-        //Initializing viewPager
-        viewPager = findViewById(R.id.view_pager);
-
-        //Initializing the bottomNavigationView
-        navigation = findViewById(R.id.bottom_navigation);
-        navigation.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        switch (item.getItemId()) {
-                            case R.id.search:
-                                viewPager.setCurrentItem(0);
-                                break;
-                            case R.id.play:
-                                viewPager.setCurrentItem(1);
-                                break;
-
-                            default:
-                        }
-                        return false;
-                    }
-                });
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -134,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements
 
             }
         });
-        setupViewPager(viewPager);
+        setupViewPager();
     }
 
     @Override
@@ -154,10 +141,14 @@ public class MainActivity extends AppCompatActivity implements
         super.onDestroy();
     }
 
-    private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager() {
         adapter.addFragment(searchFragment);
         adapter.addFragment(gameLanding);
+        adapter.addFragment(splashFragment);
         viewPager.setAdapter(adapter);
+        viewPager.setCurrentItem(2);
+        navigation.setVisibility(View.GONE);
+        viewPager.setPagingEnabled(false);
     }
     //Public Methods
     public void startGame() {
@@ -168,12 +159,14 @@ public class MainActivity extends AppCompatActivity implements
         viewPager.setCurrentItem(1);
     }
     public void setUpProfile(String id, String name){
+
+        viewPager.setCurrentItem(1);
+        viewPager.setPagingEnabled(true);
+        navigation.setVisibility(View.VISIBLE);
         this.id = id;
         this.name = name;
         ProfileFragment pf = ProfileFragment.newInstance(id);
-        adapter.addFragment(pf);
-        adapter.notifyDataSetChanged();
-        navigation = findViewById(R.id.bottom_navigation);
+        adapter.replaceFragment(pf,2);
         navigation.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -199,12 +192,14 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onRandom() {
         navigation.setVisibility(View.GONE);
+        viewPager.setPagingEnabled(false);
         JSONArray inviteMe = new JSONArray();
         createGame(inviteMe);
     }
     @Override
     public void onCreate() {
         navigation.setVisibility(View.GONE);
+        viewPager.setPagingEnabled(false);
         adapter.replaceFragment(createGame, 1);
     }
     //CreateGame
@@ -232,6 +227,7 @@ public class MainActivity extends AppCompatActivity implements
     //EndGame
     public void reset(){
         navigation.setVisibility(View.VISIBLE);
+        viewPager.setPagingEnabled(true);
         adapter.replaceFragment(gameLanding, 1);
     }
     public void rematch()

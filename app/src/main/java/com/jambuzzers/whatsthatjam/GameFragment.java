@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -30,16 +29,10 @@ import android.widget.Toast;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
 import com.jambuzzers.whatsthatjam.model.SocketPlayer;
-import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.ArrayList;
 
@@ -130,7 +123,6 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         final ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
         textView.setText(mUsername);
 
-
         FirebaseQueries.queryUserName(mUsername, new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -206,7 +198,6 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity,"Welcome back " + name, Toast.LENGTH_SHORT).show();
                 activity.setUpProfile(id,name);
             }
         });
