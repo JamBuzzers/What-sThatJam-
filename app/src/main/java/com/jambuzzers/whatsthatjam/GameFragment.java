@@ -63,7 +63,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     @BindView(R.id.tvRound) TextView tvRound;
     @BindView(R.id.tvTime) TextView tvTime;
     @BindView(R.id.tvScore) TextView tvScore;
-    @BindView(R.id.ivStop) ImageView ivStop;
+//    @BindView(R.id.ivStop) ImageView ivStop;
     @BindView(R.id.ivAlbum) ImageView ivAlbum;
     @BindView(R.id.tvInfo) TextView tvInfo;
 
@@ -93,7 +93,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
             nHscroll.addView(child);
         }
 
-        ivStop.setOnClickListener(new View.OnClickListener() {
+        ivAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!buttonEnabled)
@@ -102,6 +102,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 enableText();
             }
         });
+
         etSong.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -114,6 +115,19 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 return false;
             }
         });
+
+//        etSong.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                if(!buttonEnabled)
+//                    return;
+//                mSocketPlayer.pause();
+//                enableText();
+//
+//
+//            }
+//        });
+
         disableText();
 
 
@@ -272,10 +286,16 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         });
     }
     @Override
-    public void onTimer(int time){
-        if(null ==tvTime)
-            return;
-        tvTime.setText(Integer.toString(time));
+    public void onTimer(final int time){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(null ==tvTime)
+                    return;
+                tvTime.setText(Integer.toString(time));
+            }
+        });
+
     }
     @Override
     public void onNextRound(ArrayList<Pair<String,String>> standing, final String title, final String image, final Boolean timeout){
@@ -283,7 +303,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
             @Override
             public void run() {
                 if(timeout)
-                    tvInfo.setText("Timeout");
+                    tvInfo.setText("Time's out!");
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override

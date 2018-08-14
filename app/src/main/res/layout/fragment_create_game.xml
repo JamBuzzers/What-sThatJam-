@@ -36,14 +36,14 @@
         android:textSize="12sp" />
 
     <HorizontalScrollView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="2dp">
 
         <LinearLayout
             android:id="@+id/hscroll"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal" />
     </HorizontalScrollView>
 
