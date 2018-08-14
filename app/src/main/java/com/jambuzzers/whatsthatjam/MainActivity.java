@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.Pair;
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements
     private ViewPager viewPager;
     cAdapter adapter;
     //define fragments
+    SplashFragment splashFragment;
     SearchableFragment searchFragment;
     public GameFragment gameFragment;
     GameLandingFragment gameLanding;
@@ -61,9 +63,15 @@ public class MainActivity extends AppCompatActivity implements
     public static final int REQUEST_CODE = 1337;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         FirebaseQueries.removeError();
+
+        //FragmentTransaction fts = getSupportFragmentManager().beginTransaction();
+        //fts.replace(R.id.placeholder, new SplashFragment());
+        //fts.commit();
 
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LOCKED);
 
@@ -153,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     //Public Methods
     public void startGame() {
-            adapter.replaceFragment(gameFragment, 1);
+        adapter.replaceFragment(gameFragment, 1);
     }
     public void acceptGame(int gameId){
         player.acceptGame(gameId);

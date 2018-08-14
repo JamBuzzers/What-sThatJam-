@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".GameFragment"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/colorPrimary">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -27,7 +27,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Round" />
+                android:text="Round"
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tvRound"
@@ -35,7 +36,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-
+                android:textColor="@color/white"
                 android:text="1" />
         </LinearLayout>
 
@@ -52,7 +53,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Time" />
+                android:text="Time"
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tvTime"
@@ -60,7 +62,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-
+                android:textColor="@color/white"
                 android:text="0:00" />
 
         </LinearLayout>
@@ -79,7 +81,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Score" />
+                android:text="Score"
+                android:textColor="@color/white"/>
 
             <TextView
                 android:id="@+id/tvScore"
@@ -87,7 +90,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-
+                android:textColor="@color/white"
                 android:text="0" />
 
         </LinearLayout>
@@ -98,41 +101,19 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="50dp">
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="16dp"
-                android:layout_height="16dp" />
 
-            <TextView
+
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="Me" />
+                android:layout_height="wrap_content"
+                android:layout_margin="2dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="1" />
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent">
-
-        </LinearLayout>
-
-        <LinearLayout
-
-
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
-
-        </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/hscroll2"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
 
     </LinearLayout>
 
@@ -148,17 +129,16 @@
             android:elevation="1dp"
             android:fontFamily="sans-serif"
             android:text="This is Info"
-            android:textColor="@color/white"
+            android:textColor="@color/primaryTextColor"
             android:textSize="18sp"
             android:textStyle="bold" />
+
         <ImageView
             android:id="@+id/ivAlbum"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@android:color/black"
-            />
+            android:background="@android:color/black" />
     </FrameLayout>
-
 
 
     <EditText
@@ -168,8 +148,10 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_gravity="center"
+        android:backgroundTint="@color/white"
+        android:gravity="center"
         android:inputType="text"
-        android:gravity="center"/>
+        android:textColor="@color/white" />
 
     <ImageView
         android:id="@+id/ivStop"

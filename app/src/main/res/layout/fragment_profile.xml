@@ -4,47 +4,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#EFF0F1"
     tools:context=".ProfileFragment">
 
     <ImageView
+        android:id="@+id/coverphoto"
+        android:layout_width="wrap_content"
+        android:layout_height="213dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:scaleType="centerCrop"
+        android:src="@drawable/image"
+        android:visibility="visible" />
+
+    <ImageView
         android:id="@+id/profile"
-        android:layout_width="match_parent"
-        android:layout_height="290dp"
-        android:layout_marginTop="60dp"
-        android:background="#ffffff"
-        android:src="@drawable/instagram_user_filled_24" />
+        android:layout_width="130dp"
+        android:layout_height="130dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="15dp"
+        android:layout_marginTop="148dp"
+        android:background="#E1E2E1"
+        android:scaleType="center"
+        android:src="@mipmap/ic_launcher" />
 
     <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/profile"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_below="@+id/coverphoto"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="34dp"
+        android:layout_toEndOf="@+id/profile"
+        android:fontFamily="@font/alike"
         android:text="Username"
         android:textAlignment="center"
-        android:textSize="30sp" />
+        android:textColor="#415969"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/logout_btn"
-        android:layout_width="288dp"
-        android:layout_height="46dp"
-        android:layout_below="@+id/name"
-        android:layout_marginTop="20dp"
+        android:layout_width="251dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:background="#cdcbcb"
+        android:layout_marginBottom="101dp"
+        android:background="@drawable/rounded_rectangle"
+        android:backgroundTint="@color/colorPrimary"
         android:text="LOG OUT"
         android:textAlignment="center"
-        android:textSize="30sp" />
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/upload_btn"
-        android:layout_width="42dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="15dp"
-        android:background="@android:drawable/ic_input_add" />
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignBottom="@+id/profile"
+        android:layout_alignEnd="@+id/profile"
+        android:background="@drawable/uploadsqr" />
 
 </RelativeLayout>
