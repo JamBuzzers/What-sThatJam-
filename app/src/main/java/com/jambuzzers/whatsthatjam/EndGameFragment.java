@@ -40,7 +40,8 @@ public class EndGameFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
     }
-    @BindView(R.id.btRematch) Button btRematch;
+    @BindView(R.id.btRematch)
+    Button btRematch;
     @BindView(R.id.btHome)
     Button btHome;
     @BindView(R.id.rvScores)
@@ -69,8 +70,6 @@ public class EndGameFragment extends Fragment {
         return view;
     }
 
-
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -88,11 +87,13 @@ public class EndGameFragment extends Fragment {
         eg.setArguments(bundle);
         return eg;
     }
+
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
     }
+
     public class scoreAdapter extends RecyclerView.Adapter<scoreAdapter.ViewHolder> {
         ArrayList<Pair<String,String>> standing;
 
