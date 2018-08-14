@@ -147,26 +147,36 @@ public class MainActivity extends AppCompatActivity implements
         adapter.addFragment(splashFragment);
         viewPager.setAdapter(adapter);
         viewPager.setCurrentItem(2);
-        navigation.setVisibility(View.GONE);
-        viewPager.setPagingEnabled(false);
+        enableSwiping(false);
+    }
+    private void enableSwiping(boolean enable){
+        if(enable)
+        {
+            viewPager.setPagingEnabled(true);
+            navigation.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            navigation.setVisibility(View.GONE);
+            viewPager.setPagingEnabled(false);
+        }
     }
     //Public Methods
     public void startGame() {
-        navigation.setVisibility(View.GONE);
         adapter.replaceFragment(gameFragment, 1);
+        enableSwiping(false);
     }
     public void acceptGame(int gameId){
         player.acceptGame(gameId);
         viewPager.setCurrentItem(1);
     }
     public void setUpProfile(String id, String name){
-
+        enableSwiping(true);
         viewPager.setCurrentItem(1);
-        viewPager.setPagingEnabled(true);
-        navigation.setVisibility(View.VISIBLE);
+
         this.id = id;
         this.name = name;
-        ProfileFragment pf = ProfileFragment.newInstance(id);
+        ProfileFragment pf = ProfileFragment.newInstance(name,id);
         adapter.replaceFragment(pf,2);
         navigation.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -192,15 +202,11 @@ public class MainActivity extends AppCompatActivity implements
     //GameLanding
     @Override
     public void onRandom() {
-        navigation.setVisibility(View.GONE);
-        viewPager.setPagingEnabled(false);
         JSONArray inviteMe = new JSONArray();
         createGame(inviteMe);
     }
     @Override
     public void onCreate() {
-        navigation.setVisibility(View.GONE);
-        viewPager.setPagingEnabled(false);
         adapter.replaceFragment(createGame, 1);
     }
     //CreateGame
@@ -227,8 +233,7 @@ public class MainActivity extends AppCompatActivity implements
     }
     //EndGame
     public void reset(){
-        navigation.setVisibility(View.VISIBLE);
-        viewPager.setPagingEnabled(true);
+        enableSwiping(true);
         adapter.replaceFragment(gameLanding, 1);
     }
     public void rematch()

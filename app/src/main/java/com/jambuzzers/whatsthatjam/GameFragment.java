@@ -24,7 +24,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -217,10 +216,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 });
                 builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                        Toast.makeText(activity, "You Declined game invite", Toast.LENGTH_SHORT).show();
                         dialog.cancel();
-
                     }
                 });
                 AlertDialog dialog = builder.create();

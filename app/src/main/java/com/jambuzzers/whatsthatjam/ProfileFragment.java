@@ -19,20 +19,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.jambuzzers.whatsthatjam.model.FirebaseQueries;
-import com.jambuzzers.whatsthatjam.model.User;
 
 import java.util.UUID;
 
@@ -57,12 +54,12 @@ public class ProfileFragment extends Fragment  {
     Uri filePath;
 
     String username;
+    String id;
     //Firebase
     FirebaseStorage storage;
     StorageReference storageReference;
     DatabaseReference Ref;
     Context context;
-    User u;
 
 
 
@@ -82,6 +79,7 @@ public class ProfileFragment extends Fragment  {
         {
             username = getArguments().getString("username");
             Name.setText(username);
+            id = getArguments().getString("id");
         }
         String nUrl = context.getSharedPreferences("deadpool", Context.MODE_PRIVATE).getString("imgurl","@drawable/instagram_user_filled_24");
         GlideApp.with(getContext())
@@ -101,12 +99,8 @@ public class ProfileFragment extends Fragment  {
             }
         });
 
-        storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
 
-
-        Ref = FirebaseDatabase.getInstance().getReference().child("users");
-        FirebaseQueries.userById(username, new OnCompleteListener<DocumentSnapshot>() {
+        FirebaseQueries.userById(id, new OnCompleteListener<DocumentSnapshot>() {
             @Override
 
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -135,10 +129,11 @@ public class ProfileFragment extends Fragment  {
 
     }
 
-    public static ProfileFragment newInstance(String username) {
+    public static ProfileFragment newInstance(String username, String id) {
         ProfileFragment frag = new ProfileFragment();
         Bundle b = new Bundle();
         b.putString("username", username);
+        b.putString("id",id);
         frag.setArguments(b);
         return frag;
     }
