@@ -83,6 +83,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         for(String u : uPlaying){
             View child = getChildView(u);
             nHscroll.addView(child);
+
         }
 
         ivAlbum.setOnClickListener(new View.OnClickListener() {
@@ -134,6 +135,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         View view = LayoutInflater.from(context).inflate(R.layout.item_playing, null);
         TextView textView = view.findViewById(R.id.tvName);
         final ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
+        ((TextView)view.findViewById(R.id.tvScore1)).setText("0");
         textView.setText(mUsername);
 
         FirebaseQueries.queryUserName(mUsername, new OnCompleteListener<QuerySnapshot>() {
@@ -244,7 +246,8 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvInfo.setText(result);
+                String s = result.substring(0, 1).toUpperCase() + result.substring(1);
+                tvInfo.setText(s);
             }
         });
     }
@@ -285,7 +288,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
 
     }
     @Override
-    public void onNextRound(ArrayList<Pair<String,String>> standing, final String title, final String image, final Boolean timeout){
+    public void onNextRound(final ArrayList<Pair<String,String>> standing, final String title, final String image, final Boolean timeout){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -298,6 +301,8 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                         reveal(title,image);
                     }
                 }, 2000);
+                for(int i = 0 ; i <standing.size();i++)
+                    ((TextView)nHscroll.getChildAt(i).findViewById(R.id.tvScore1)).setText(standing.get(i).second);
             }
         });
     }

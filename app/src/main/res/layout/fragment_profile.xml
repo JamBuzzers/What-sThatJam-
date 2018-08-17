@@ -50,7 +50,7 @@
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="101dp"
+        android:layout_marginBottom="103dp"
         android:background="@drawable/rounded_rectangle"
         android:backgroundTint="@color/colorPrimary"
         android:fontFamily="@font/roboto_bold"
