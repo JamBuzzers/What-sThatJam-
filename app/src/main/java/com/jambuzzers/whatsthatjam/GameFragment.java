@@ -24,7 +24,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -56,7 +55,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
     @BindView(R.id.tvRound) TextView tvRound;
     @BindView(R.id.tvTime) TextView tvTime;
     @BindView(R.id.tvScore) TextView tvScore;
-    @BindView(R.id.ivStop) ImageView ivStop;
+//    @BindView(R.id.ivStop) ImageView ivStop;
     @BindView(R.id.ivAlbum) ImageView ivAlbum;
     @BindView(R.id.tvInfo) TextView tvInfo;
 
@@ -84,9 +83,10 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         for(String u : uPlaying){
             View child = getChildView(u);
             nHscroll.addView(child);
+
         }
 
-        ivStop.setOnClickListener(new View.OnClickListener() {
+        ivAlbum.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(!buttonEnabled)
@@ -95,6 +95,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 enableText();
             }
         });
+
         etSong.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
@@ -107,6 +108,19 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 return false;
             }
         });
+
+//        etSong.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view){
+//                if(!buttonEnabled)
+//                    return;
+//                mSocketPlayer.pause();
+//                enableText();
+//
+//
+//            }
+//        });
+
         disableText();
 
 
@@ -121,8 +135,8 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         View view = LayoutInflater.from(context).inflate(R.layout.item_playing, null);
         TextView textView = view.findViewById(R.id.tvName);
         final ImageView imageView = view.findViewById(R.id.ivSearchProfPic);
+        ((TextView)view.findViewById(R.id.tvScore1)).setText("0");
         textView.setText(mUsername);
-
 
         FirebaseQueries.queryUserName(mUsername, new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -199,7 +213,6 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(activity,"Welcome back " + name, Toast.LENGTH_SHORT).show();
                 activity.setUpProfile(id,name);
             }
         });
@@ -219,10 +232,7 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                 });
                 builder.setNegativeButton("Decline", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // User cancelled the dialog
-                        Toast.makeText(activity, "You Declined game invite", Toast.LENGTH_SHORT).show();
                         dialog.cancel();
-
                     }
                 });
                 AlertDialog dialog = builder.create();
@@ -236,7 +246,8 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                tvInfo.setText(result);
+                String s = result.substring(0, 1).toUpperCase() + result.substring(1);
+                tvInfo.setText(s);
             }
         });
     }
@@ -265,18 +276,24 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
         });
     }
     @Override
-    public void onTimer(int time){
-        if(null ==tvTime)
-            return;
-        tvTime.setText(Integer.toString(time));
+    public void onTimer(final int time){
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(null ==tvTime)
+                    return;
+                tvTime.setText(Integer.toString(time));
+            }
+        });
+
     }
     @Override
-    public void onNextRound(ArrayList<Pair<String,String>> standing, final String title, final String image, final Boolean timeout){
+    public void onNextRound(final ArrayList<Pair<String,String>> standing, final String title, final String image, final Boolean timeout){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if(timeout)
-                    tvInfo.setText("Timeout");
+                    tvInfo.setText("Time's out!");
                 Handler handler = new Handler();
                 handler.postDelayed(new Runnable() {
                     @Override
@@ -284,6 +301,8 @@ public class GameFragment extends Fragment implements SocketPlayer.SocketPlayerL
                         reveal(title,image);
                     }
                 }, 2000);
+                for(int i = 0 ; i <standing.size();i++)
+                    ((TextView)nHscroll.getChildAt(i).findViewById(R.id.tvScore1)).setText(standing.get(i).second);
             }
         });
     }
